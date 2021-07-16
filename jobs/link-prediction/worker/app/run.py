@@ -4,6 +4,7 @@ import random
 
 import igraph
 import numpy as np
+from sklearn.metrics import roc_auc_score
 
 import grl.graph as sd
 from grl.utils import *
