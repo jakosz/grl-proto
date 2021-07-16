@@ -6,8 +6,7 @@ ADD src /usr/src
 
 RUN python3 -m pip install -r /usr/src/requirements.txt
 RUN cd /usr/src/grl && python3 -m pip install -e .
-RUN cd /usr/src/sparse2dense && python3 -m pip install -e .
 
-RUN chmod +x /app/run.py
+RUN chmod +x /app/ENTRYPOINT
 USER u
-ENTRYPOINT ["/app/run.py"]
+ENTRYPOINT ["/app/ENTRYPOINT"]
