@@ -10,3 +10,4 @@ RUN cd /usr/src/sparse2dense && python3 -m pip install -e .
 
 RUN chmod +x /app/run.py
 USER u
+ENTRYPOINT ["/app.run.py"]
