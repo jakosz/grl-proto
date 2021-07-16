@@ -6,6 +6,7 @@ import igraph
 import numpy as np
 
 import grl.graph as sd
+from grl.utils import *
 from grl.utils.log import get_stdout_logger
 
 import config
