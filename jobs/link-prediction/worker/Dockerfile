@@ -1,8 +1,8 @@
 FROM python:3.7.9
 USER root
 
-ADD app/* /app
-ADD src/* /usr/src
+ADD app /app
+ADD src /usr/src
 ADD ../../../grl /usr/src/grl
 
 RUN python3 -m pip install /usr/src/requirements.txt
