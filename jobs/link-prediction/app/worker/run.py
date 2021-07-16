@@ -74,7 +74,7 @@ def get_training_sample(G, graph, max_nb, batch_size):
 
 def send_results(x, base_uri):
     b64 = base64.b64encode(json.dumps(x, cls=JsonNumpy, separators=(',',':')).encode()).decode()
-    req = urllib.request.urlopen(f"{base_uri}/{b64}")
+    req = urllib.request.urlopen(f"{base_uri}/{b64}").read()
     return b64 
 
 
