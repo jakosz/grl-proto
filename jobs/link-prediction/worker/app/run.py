@@ -3,6 +3,7 @@
 import base64
 import json
 import random
+import sys
 import urllib.request
 
 import igraph
@@ -70,7 +71,7 @@ def get_training_sample(G, graph, max_nb, batch_size):
     return [x0, x1], y
 
 
-def send_results(res):
+def send_results(x):
     b64 = base64.b64encode(json.dumps(x, cls=JsonNumpy, separators=(',',':')).encode()).decode()
     return b64 
 
