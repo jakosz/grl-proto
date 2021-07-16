@@ -1,3 +1,6 @@
 0.1.0
-* local link prediction heuristics
-* models for link prediction
+    * local link prediction heuristics
+    * models for link prediction
+
+0.2.0
+    * add graph module
