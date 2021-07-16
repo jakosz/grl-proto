@@ -19,7 +19,7 @@ class MainHandler(tornado.web.RequestHandler):
         res = self.request.uri
         dec = receive_results(res[1:])
         self.log.info(res)
-        self.log.info(get)
+        self.log.info(dec)
         self.write(f"{res}\n\n{dec}")
 
 
