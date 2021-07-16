@@ -3,6 +3,7 @@
 import base64
 import json
 import random
+import urllib.request
 
 import igraph
 import numpy as np
@@ -15,8 +16,6 @@ from grl.utils.log import get_stdout_logger
 
 import config
 
-
-log = get_stdout_logger('link-prediction-worker')
 
 def get_rgm(obs, methods):
 
@@ -54,6 +53,7 @@ def get_rgm(obs, methods):
     return G, graph, sig
 
 
+log = get_stdout_logger('link-prediction-worker')
 log.info('Starting job...')
 log.info('Configuration...')
 
@@ -81,16 +81,16 @@ for dim in dims:
         'dim': int(dim),
         'reducer': 'eig',
         'max_nb': None,
-        'loss': float(tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean()),
-        'acc': float(tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean()),
-        'auc': float(roc_auc_score(a.ravel(), yhat.ravel())),
+        'loss': tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean(),
+        'acc': tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean(),
+        'auc': roc_auc_score(a.ravel(), yhat.ravel()),
         'rgm': sig,
         'batch_size': None,
         'steps': None
     }
 
     log.info(res)
-    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, separators=(',',':')).encode())}")
+    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, cls=JsonNumpy, separators=(',',':')).encode())}")
 
 res = []
 
@@ -127,13 +127,13 @@ for sym in [True, False]:
                         'dim': int(dim),
                         'reducer': name,
                         'max_nb': max_nb,
-                        'loss': float(hist[-100:, 0].mean()),
-                        'acc': float(hist[-100:, 1].mean()),
-                        'auc': float(hist[-100:, 2].mean()),
+                        'loss': hist[-100:, 0].mean(),
+                        'acc': hist[-100:, 1].mean(),
+                        'auc': hist[-100:, 2].mean(),
                         'rgm': sig,
                         'batch_size': batch_size,
                         'steps': steps
                     }
     
                     log.info(res)
-                    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, separators=(',',':')).encode())}")
+                    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, cls=JsonNumpy, separators=(',',':')).encode())}")
