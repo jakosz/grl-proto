@@ -17,6 +17,7 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         res = self.request.uri
         self.log.info(res)
+        self.write(res)
 
 
 def make_app():
