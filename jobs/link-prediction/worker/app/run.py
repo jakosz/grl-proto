@@ -2,8 +2,8 @@ import random
 
 import igraph
 import numpy as np
-import sparse2dense as sd
 
+import grl.graph as sd
 from grl.utils.log import get_stdout_logger
 
 import config
