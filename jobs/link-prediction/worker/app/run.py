@@ -6,6 +6,7 @@ import random
 import urllib.request
 
 import igraph
+import numba
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
@@ -53,6 +54,22 @@ def get_rgm(obs, methods):
         
     return G, graph, sig
 
+
+@numba.njit()
+def n2(vs, graph, max_nb):
+    res = np.empty((vs.shape[0], max_nb), dtype=graph[1].dtype.type)
+    for i in range(vs.size):
+        res[i] = sd.neighbours.neighbourhood_1d(vs[i], graph, max_nb)
+    return res
+
+
+def get_training_sample(G, graph, max_nb, batch_size):
+    x, y = get_nce_sample(G, batch_size)
+    x0 = n2(x[0]+1, graph, max_nb)
+    x1 = n2(x[1]+1, graph, max_nb)
+    return [x0, x1], y
+
+rg = lambda x: getattr(igraph.Graph, x)
 
 log = get_stdout_logger('link-prediction-worker')
 log.info('Starting job...')
