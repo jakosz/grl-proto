@@ -69,11 +69,16 @@ def get_training_sample(G, graph, max_nb, batch_size):
     x1 = n2(x[1]+1, graph, max_nb)
     return [x0, x1], y
 
+
+def send_results(res):
+    b64 = base64.b64encode(json.dumps(x, cls=JsonNumpy, separators=(',',':')).encode()).decode()
+    return b64 
+
 rg = lambda x: getattr(igraph.Graph, x)
+
 
 log = get_stdout_logger('link-prediction-worker')
 log.info('Starting job...')
-log.info('Configuration...')
 
 G, graph, sig = get_rgm(np.arange(config.VCOUNT_FROM, config.VCOUNT_TO), config.RGM_SAMPLING_SPACE)
 obs = int(sig['n'])
@@ -90,27 +95,34 @@ a = gtoa(G)
 val, vec = np.linalg.eig(a)
 val = np.real(val)
 vec = np.real(vec)
+
 for dim in dims:
-    yhat = vec[:, :dim].dot(np.diag(val[:dim])).dot(vec.T[:dim, :])
+    try:
 
-    res = {
-        'symmetric': True,
-        'diagonal': True,
-        'dim': int(dim),
-        'reducer': 'eig',
-        'max_nb': None,
-        'loss': tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean(),
-        'acc': tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean(),
-        'auc': roc_auc_score(a.ravel(), yhat.ravel()),
-        'rgm': sig,
-        'batch_size': None,
-        'steps': None
-    }
+        yhat = vec[:, :dim].dot(np.diag(val[:dim])).dot(vec.T[:dim, :])
 
-    log.info(res)
-    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, cls=JsonNumpy, separators=(',',':')).encode())}")
+        res = {
+            'symmetric': True,
+            'diagonal': True,
+            'dim': int(dim),
+            'reducer': 'eig',
+            'max_nb': None,
+            'loss': tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean(),
+            'acc': tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean(),
+            'auc': roc_auc_score(a.ravel(), yhat.ravel()),
+            'rgm': sig,
+            'batch_size': None,
+            'steps': None
+        }
 
-res = []
+        log.info(res)
+        log.info(f"Network request would look like this: {send_results(res)}") 
+
+    except Exception as e:
+        log.error(e)
+        sys.exit()
+
+# neuro
 
 for sym in [True, False]:
     for diag in [True, False]:
@@ -154,4 +166,4 @@ for sym in [True, False]:
                     }
     
                     log.info(res)
-                    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, cls=JsonNumpy, separators=(',',':')).encode())}")
+                    log.info(f"Network request would look like this: {send_results(res)}") 
