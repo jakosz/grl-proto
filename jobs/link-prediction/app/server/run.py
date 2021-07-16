@@ -17,8 +17,14 @@ class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
         res = self.request.uri
+        dec = receive_results(res[1:])
         self.log.info(res)
-        self.write(res)
+        self.log.info(get)
+        self.write(f"{res}\n\n{dec}")
+
+
+def receive_results(x):
+    return json.loads(base64.b64decode(x.encode()).decode())
 
 
 def make_app():
