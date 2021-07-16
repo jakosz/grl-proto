@@ -49,6 +49,9 @@ def get_rgm(obs, methods):
     return G, graph, sig
 
 
+log.info('Starting job...')
+log.info('Configuration...')
+
 G, graph, sig = get_rgm(np.arange(config.VCOUNT_FROM, config.VCOUNT_TO), config.RGM_SAMPLING_SPACE)
 obs = int(sig['n'])
 nnb = [1, int(np.quantile(G.degree(), .9))]
@@ -56,4 +59,29 @@ dims = config.DIM_RANGE
 steps = config.TRAINING_STEPS
 batch_size = config.BATCH_SIZE
 
-log.info(sig)
+log.info(f'Generated graph from {sig}')
+
+# eigen
+
+a = gtoa(G)
+val, vec = np.linalg.eig(a)
+val = np.real(val)
+vec = np.real(vec)
+for dim in dims:
+    yhat = vec[:, :dim].dot(np.diag(val[:dim])).dot(vec.T[:dim, :])
+
+    res = {
+        'symmetric': True,
+        'diagonal': True,
+        'dim': int(dim),
+        'reducer': 'eig',
+        'max_nb': None,
+        'loss': tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean(),
+        'acc': tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean(),
+        'auc': roc_auc_score(a.ravel(), yhat.ravel()),
+        'rgm': sig,
+        'batch_size': None,
+        'steps': None
+    }
+
+    log.info(res)
