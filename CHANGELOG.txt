@@ -1,0 +1,3 @@
+0.1.0
+	* local link prediction heuristics
+	* models for link prediction

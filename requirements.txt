@@ -1,0 +1,7 @@
+numba==0.53.1
+matplotlib==3.3.4
+numpy==1.19.5
+pytest==6.1.1
+python-igraph==0.9.6
+scipy==1.5.2
+tensorflow==2.5.0
