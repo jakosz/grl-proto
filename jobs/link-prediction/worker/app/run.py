@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 import grl.graph as sd
+from grl.models import *
 from grl.utils import *
 from grl.utils.log import get_stdout_logger
 
@@ -80,9 +81,9 @@ for dim in dims:
         'dim': int(dim),
         'reducer': 'eig',
         'max_nb': None,
-        'loss': tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean(),
-        'acc': tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean(),
-        'auc': roc_auc_score(a.ravel(), yhat.ravel()),
+        'loss': float(tf.keras.losses.binary_crossentropy(a, yhat).numpy().mean()),
+        'acc': float(tf.keras.metrics.binary_accuracy(a, yhat).numpy().mean()),
+        'auc': float(roc_auc_score(a.ravel(), yhat.ravel())),
         'rgm': sig,
         'batch_size': None,
         'steps': None
@@ -90,3 +91,49 @@ for dim in dims:
 
     log.info(res)
     log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, separators=(',',':')).encode())}")
+
+res = []
+
+for sym in [True, False]:
+    for diag in [True, False]:
+        for dim in dims:
+            
+            reducers = {
+                'mean': lambda x: tf.reduce_mean(x, axis=-2),
+                'gnn': GNNSimple(dim, n_layers=1, activation=None),
+                'gnn-gelu': GNNSimple(dim, n_layers=1, activation=tf.nn.gelu),
+                'gat-h1': GAT(dim, n_layers=1, n_heads=1),
+                'gat-h2': GAT(dim, n_layers=1, n_heads=2)
+            }
+            
+            for name, reducer in reducers.items():
+                for max_nb in nnb:
+                    model, latent = get_model(obs+1, dim, max_nb=max_nb, symmetric=sym, diagonal=diag, reducer=reducer)
+                    hist = []
+                    if max_nb == 1:
+                        for step in range(steps):
+                            x, y = get_nce_sample(G)
+                            x = [e+1 for e in x]
+                            hist.append(model.train_on_batch(x, y))
+                    else:
+                        for step in range(steps):
+                            x, y = get_training_sample(G, graph, max_nb, batch_size)
+                            hist.append(model.train_on_batch(x, y))
+                    hist = np.array(hist)
+                    
+                    res = {
+                        'symmetric': sym,
+                        'diagonal': diag,
+                        'dim': int(dim),
+                        'reducer': name,
+                        'max_nb': max_nb,
+                        'loss': float(hist[-100:, 0].mean()),
+                        'acc': float(hist[-100:, 1].mean()),
+                        'auc': float(hist[-100:, 2].mean()),
+                        'rgm': sig,
+                        'batch_size': batch_size,
+                        'steps': steps
+                    }
+    
+                    log.info(res)
+                    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, separators=(',',':')).encode())}")
