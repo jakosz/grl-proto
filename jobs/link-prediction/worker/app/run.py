@@ -10,6 +10,7 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 
 import grl.graph as sd
+import grl.layers
 from grl.models import *
 from grl.utils import *
 from grl.utils.log import get_stdout_logger
@@ -100,10 +101,10 @@ for sym in [True, False]:
             
             reducers = {
                 'mean': lambda x: tf.reduce_mean(x, axis=-2),
-                'gnn': GNNSimple(dim, n_layers=1, activation=None),
-                'gnn-gelu': GNNSimple(dim, n_layers=1, activation=tf.nn.gelu),
-                'gat-h1': GAT(dim, n_layers=1, n_heads=1),
-                'gat-h2': GAT(dim, n_layers=1, n_heads=2)
+                'gnn': grl.layers.GNNSimple(dim, n_layers=1, activation=None),
+                'gnn-gelu': grl.layers.GNNSimple(dim, n_layers=1, activation=tf.nn.gelu),
+                'gat-h1': grl.layers.GAT(dim, n_layers=1, n_heads=1),
+                'gat-h2': grl.layers.GAT(dim, n_layers=1, n_heads=2)
             }
             
             for name, reducer in reducers.items():
