@@ -1,5 +1,7 @@
 #!/usr/local/bin/python3
 
+import base64
+import json
 import random
 
 import igraph
@@ -87,3 +89,4 @@ for dim in dims:
     }
 
     log.info(res)
+    log.info(f"Network request would look like this: http://server/{base64.b64encode(json.dumps(res, separators=(',',':')).encode())}")
