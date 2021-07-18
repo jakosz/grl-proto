@@ -93,12 +93,12 @@ if __name__ == '__main__':
 
     log.info(f'Starting job with the following configuration: {config}')
 
-    G, graph, sig = get_rgm(np.arange(config.VCOUNT_FROM, config.VCOUNT_TO), config.RGM_SAMPLING_SPACE)
+    G, graph, sig = get_rgm(np.arange(config['VCOUNT_FROM'], config['VCOUNT_TO']), config['RGM_SAMPLING_SPACE'])
     obs = int(sig['n'])
     nnb = [1, int(np.quantile(G.degree(), .9))]
-    dims = config.DIM_RANGE 
-    steps = config.TRAINING_STEPS
-    batch_size = config.BATCH_SIZE
+    dims = config['DIM_RANGE']
+    steps = config['TRAINING_STEPS']
+    batch_size = config['BATCH_SIZE']
 
     log.info(f'Generated graph from {sig}')
 
