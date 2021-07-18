@@ -19,7 +19,7 @@ class MainHandler(tornado.web.RequestHandler):
         res = self.request.uri
         dec = receive_results(res[1:])
         with open('results.json', 'a') as f:
-            f.write(dec)
+            f.write(dec+"\n")
         self.log.info(f"{res[1:17]} OK")
 
 
