@@ -1,4 +1,4 @@
-BATCH_SIZE = 128
+BATCH_SIZE = 128 
 DIM_RANGE = (2, 16)
 
 

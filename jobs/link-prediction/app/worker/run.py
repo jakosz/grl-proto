@@ -18,8 +18,6 @@ from grl.models import *
 from grl.utils import *
 from grl.utils.log import get_stdout_logger
 
-import config
-
 
 def get_rgm(obs, methods):
 
@@ -84,11 +82,16 @@ rg = lambda x: getattr(igraph.Graph, x)
 if __name__ == '__main__':
     
     p = argparse.ArgumentParser()
+    p.add_argument('-c', '--config')
     p.add_argument('-s', '--server')
     args, _ = p.parse_known_args()
 
     log = get_stdout_logger('link-prediction-worker')
-    log.info('Starting job...')
+    
+    with open(args.config, 'r') as f:
+        config = json.loads(f.read())
+
+    log.info(f'Starting job with the following configuration: {config}')
 
     G, graph, sig = get_rgm(np.arange(config.VCOUNT_FROM, config.VCOUNT_TO), config.RGM_SAMPLING_SPACE)
     obs = int(sig['n'])
