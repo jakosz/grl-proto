@@ -4,6 +4,7 @@
     2,
     16
   ],
+  "DIM_SAMPLE": 3, 
   "RGM_SAMPLING_SPACE": {
     "Barabasi": {
       "m": [

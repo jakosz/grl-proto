@@ -96,7 +96,8 @@ if __name__ == '__main__':
     G, graph, sig = get_rgm(np.arange(config['VCOUNT_FROM'], config['VCOUNT_TO']), config['RGM_SAMPLING_SPACE'])
     obs = int(sig['n'])
     nnb = [1, int(np.quantile(G.degree(), .9))]
-    dims = range(*config['DIM_RANGE'])
+    dims = np.arange(*config['DIM_RANGE'])
+    dims = np.random.choice(dims, config['DIM_SAMPLE'], replace=False)
     steps = config['TRAINING_STEPS']
     batch_size = config['BATCH_SIZE']
 
