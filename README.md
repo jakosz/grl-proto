@@ -1,7 +1,5 @@
 #### Graph Representation Learning
 
-From scratch ¯\_(ツ)_/¯ 
-
 ---
 
 #### TODO
