@@ -6,4 +6,8 @@
     * add graph module
 
 0.2.1
-	* add more conversions to graph.utils
+    * add more conversions to graph.utils
+
+0.2.2
+    * add graph.embed.eigen
+
