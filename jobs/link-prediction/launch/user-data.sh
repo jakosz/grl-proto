@@ -1,4 +1,6 @@
 #!/bin/bash
+VERSION=0.2.3
+SERVER=http://88.99.13.15
 touch /home/ubuntu/log-0
 export DEBIAN_FRONTEND=noninteractive
 touch /home/ubuntu/log-1
@@ -14,10 +16,10 @@ apt-get update
 touch /home/ubuntu/log-6
 apt-get install -y docker-ce docker-ce-cli containerd.io
 touch /home/ubuntu/log-7
-curl --url "https://s3.amazonaws.com/public.qwbgewvdrr6sq2eaemcton9wsbqxhzgy/grl-jobs-link-prediction-0.2.1.tar.gz" --output /home/ubuntu/grl-jobs-link-prediction-0.2.1.tar.gz
+curl --url "https://s3.amazonaws.com/public.qwbgewvdrr6sq2eaemcton9wsbqxhzgy/grl-jobs-link-prediction-${VERSION}.tar.gz" --output /home/ubuntu/grl-jobs-link-prediction-${VERSION}.tar.gz
 touch /home/ubuntu/log-8
-unpigz /home/ubuntu/grl-jobs-link-prediction-0.2.1.tar.gz
+unpigz /home/ubuntu/grl-jobs-link-prediction-${VERSION}.tar.gz
 touch /home/ubuntu/log-9
-docker load --input /home/ubuntu/grl-jobs-link-prediction-0.2.1.tar
+docker load --input /home/ubuntu/grl-jobs-link-prediction-${VERSION}.tar
 touch /home/ubuntu/log-10
-while true; do docker run grl-jobs-link-prediction:0.2.1 worker --server http://88.99.13.15 --config /app/worker/config.json; done
+while true; do docker run grl-jobs-link-prediction:${VERSION} worker --server $SERVER --config /app/worker/config.json; done

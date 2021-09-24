@@ -1,11 +1,16 @@
 import igraph
+import numba
 import numpy as np
 
 from .mem import *
 
 
+def from_adjacency(a):
+    raise NotImplementedError
+
+
 def from_igraph(g):
-    """ Convert igraph.Graph to sparse2dense graph representation.
+    """ Convert igraph.Graph to [[name]] graph representation.
         Note: currently it assumes a symmetric graph to be passed. 
     """
     nodes = zeros((g.vcount()+2,), dtype=np.uint64)
@@ -23,6 +28,24 @@ def from_igraph(g):
 
 
 def from_ogb(g):
-    """ Convert Open Graph Benchmark library-agnostic format to sparse2dense. 
+    """ Convert Open Graph Benchmark library-agnostic format to [[name]]. 
     """
+    raise NotImplementedError
+
+
+@numba.njit(parallel=True)
+def to_adjacency(graph):
+    n = grl.graph.core.vcount(graph)
+    A = np.zeros((n, n), dtype=np.uint8)
+    for i in numba.prange(n):
+        for j in grl.graph.core.neighbours(i+1, graph)-1:
+            A[i, j] = 1
+    return A
+
+
+def to_igraph(g):
+    raise NotImplementedError
+
+
+def to_ogb(g):
     raise NotImplementedError
