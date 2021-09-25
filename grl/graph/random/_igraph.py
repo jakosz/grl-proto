@@ -2,7 +2,7 @@ import random as _random
 
 import igraph as _igraph
 
-from ..utils import _from_igraph as _from_igraph
+from ..utils import from_igraph as _from_igraph
 
 
 def barabasi(n, m, seed=None):
