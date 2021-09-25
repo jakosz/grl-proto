@@ -11,3 +11,9 @@
 0.2.2
     * add graph.embed.eigen
 
+0.2.3
+    * Put a few more random graph model wrappers to graph.random: SBM,Erdos_Renyi, Forest_Fire and GRG.
+
+0.3.0
+    * graph.utils now have tested conversions between native graph rep. and adjacency and igraph
+    * graph.core shaved off to include only graph statistics 
