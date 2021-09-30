@@ -68,19 +68,6 @@ def vcount(x):
     else:
         return x.vcount()
 
-def fr(x):
-    if type(x) is np.ndarray:
-        x = atog(x)
-    return np.array(x.layout_fruchterman_reingold().coords)
-
-
-def plot_graph(g, xy=None):
-    if xy is None:
-        xy = fr(g)
-    E = edgelist(g)
-    plt.scatter(xy[:, 0], xy[:, 1])
-    plt.gca().add_collection(LineCollection([xy[e].tolist() for e in E]))
-
 def get_graph_conn(n, p):
     G = get_graph(n, p)
     while not G.is_connected():

@@ -66,6 +66,16 @@ def test_get_neg_sample():
 
 # --- utils
 
+def test_enumerate_edges():
+    for G in get_graphs():
+        assert grl.graph.utils.enumerate_edges(G).shape[0] == grl.graph.core.ecount(G)
+
+
+def test_enumerate_nodes():
+    for G in get_graphs():
+        assert grl.graph.utils.enumerate_nodes(G).shape[0] == grl.graph.core.vcount(G)
+
+
 def test_to_from_adjacency():
     for G in get_graphs():
         A = grl.graph.utils.to_adjacency(G)

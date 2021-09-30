@@ -7,6 +7,35 @@ from .mem import *
 
 
 @numba.njit()
+def enumerate_edges(graph):
+    res = np.empty((core.ecount(graph), 2), dtype=graph[1].dtype)
+    i = 0
+    for src in enumerate_nodes(graph):
+        nbs = core.neighbours(src, graph)
+        if nbs[0]: # core.neighbours returns array([0]) for isolates
+            for dst in nbs:
+                res[i, 0] = src
+                res[i, 1] = dst
+                i += 1
+    return res
+
+
+@numba.njit()
+def enumerate_nodes(graph):
+    return (np.arange(core.vcount(graph))+1).astype(graph[1].dtype)
+
+
+@numba.njit()
+def enumerate_without(graph, subset):
+    """ Enumerate nodes and remove given subset from the enumeration. 
+    """
+    nodes = enumerate_nodes(graph)
+    for i in subset-1: # @1-indexing
+        nodes[i] = 0
+    return nodes[nodes != 0]
+
+
+@numba.njit()
 def from_adjacency(A):
     """ Convert adjacency matrix to [[name]] graph representation.
     """
