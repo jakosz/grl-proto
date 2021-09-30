@@ -1,9 +1,15 @@
+import hashlib
+
 import igraph
 import numba
 import numpy as np
 
 from . import core
 from .mem import *
+
+
+def digest(graph):
+    return hashlib.sha256(b"".join([e.tobytes() for e in graph])).digest()
 
 
 @numba.njit()
@@ -73,6 +79,10 @@ def from_ogb(g):
     """ Convert Open Graph Benchmark library-agnostic format to [[name]]. 
     """
     raise NotImplementedError
+
+
+def hexdigest(graph):
+    return digest(graph).hex()
 
 
 @numba.njit(parallel=True)
