@@ -31,7 +31,8 @@ def _compile_model(inputs, outputs):
     return model
 
 
-def get_model(obs, dim, max_nb, symmetric, diagonal, reducer):
+def get(vcount, dim, symmetric, diagonal, max_nb=1, reducer=tf.squeeze):
+    obs = vcount+1 # @1-indexing
     inputs, latent = _build_inputs(obs, dim, max_nb, symmetric, diagonal)
     outputs = _build_model(inputs, latent, reducer)
     model = _compile_model(inputs, outputs)
