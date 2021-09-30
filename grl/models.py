@@ -27,7 +27,7 @@ def _build_model(inputs, latent, reducer):
 
 def _compile_model(inputs, outputs, loss, metrics):
     model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer='adam', loss=loss, metrics)
+    model.compile(optimizer='adam', loss=loss, metrics=metrics)
     return model
 
 
