@@ -1,3 +1,0 @@
-python-igraph==0.9.6
-tensorflow==2.5.0
-tornado==6.1

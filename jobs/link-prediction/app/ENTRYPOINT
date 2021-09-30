@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ "$1" == "worker" ]; then 
-    python3 /app/worker/run.py ${@:-2}
-elif [ "$1" == "server" ]; then
-    python3 /app/server/run.py ${@:-2}
-else
-    exec "$@"
-fi
