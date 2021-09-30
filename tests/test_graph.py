@@ -42,6 +42,20 @@ def test_vcount():
         assert grl.vcount(g) == G.vcount()
 
 
+# --- sample 
+
+def test_get_neg_sample():
+    for G in get_graphs():
+        edgelist = grl.graph.sample.neg(G, 2048)[0]
+        positive = edgelist[:1024]
+        negative = edgelist[1024:]
+        for i in range(negative.shape[0]):
+            assert positive[i, 1] in grl.neighbours(positive[i, 0], G)
+            assert positive[i, 0] in grl.neighbours(positive[i, 1], G)    
+            assert not negative[i, 1] in grl.neighbours(negative[i, 0], G)
+            assert not negative[i, 0] in grl.neighbours(negative[i, 1], G)
+
+
 # --- utils
 
 def test_to_from_adjacency():
