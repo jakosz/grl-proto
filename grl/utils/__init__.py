@@ -56,27 +56,6 @@ def anti_edgelist(x):
 
 edgelist = _edgelist_numpy
 
-def get_nce_sample(x, bs=1024):
-    bs = bs//2
-    E = edgelist(x)
-    y = np.hstack([np.ones(bs), np.zeros(bs)])
-    x = np.vstack([
-        E[np.random.choice(E.shape[0], bs)], 
-        np.random.choice(vcount(x), size=(bs, 2))
-    ])
-    return [x[:, 0], x[:, 1]], y
-
-def get_neg_sample(x, bs=1024):
-    bs = bs//2
-    E = edgelist(x)
-    nE = anti_edgelist(x)
-    y = np.hstack([np.ones(bs), np.zeros(bs)])
-    x = np.vstack([
-        E[np.random.choice(E.shape[0], bs)], 
-        nE[np.random.choice(nE.shape[0], bs)]
-    ])
-    return [x[:, 0], x[:, 1]], y
-
 def get_adj(n, p=.5):
     return squareform(np.random.binomial(1, p, size=np.sum(np.arange(1, n))).astype(np.uint8))
 
