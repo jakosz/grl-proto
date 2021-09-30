@@ -22,7 +22,7 @@ def _build_inputs(obs, dim, max_nb, symmetric, diagonal):
 def _build_model(inputs, latent, reducer):
     e0 = reducer(latent[0](inputs[0]))
     e1 = reducer(latent[1](inputs[1]))
-    return tf.nn.sigmoid(tf.reduce_sum(latent[2](e0*e1), axis=-1))
+    return tf.nn.sigmoid(reducer(latent[2](e0*e1), axis=-1))
 
 
 def _compile_model(inputs, outputs, loss, metrics):
