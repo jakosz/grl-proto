@@ -44,6 +44,14 @@ def test_vcount():
 
 # --- sample 
 
+def test_get_nce_sample():
+    # take large noise contrast from a small graph
+    # and assert all possible combinations are there
+    G = grl.graph.random.erdos(4, .5, 13)
+    edgelist = grl.graph.sample.nce(G, 2048)[0]
+    assert np.unique(edgelist[1024:], axis=0).shape[0] == 16
+
+
 def test_get_neg_sample():
     for G in get_graphs():
         edgelist = grl.graph.sample.neg(G, 2048)[0]

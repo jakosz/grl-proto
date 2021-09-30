@@ -43,24 +43,6 @@ def test_get_adj_symmetry():
     assert np.all(A == A.T)
     
 
-def test_get_nce_sample():
-    n = 16
-    p = .1
-    A = get_adj(n, p)
-    bs = n**3
-    [L, R], Y = get_nce_sample(x=A, bs=bs)
-    assert L.shape == R.shape == Y.shape
-    assert L.shape[0] == bs
-    # draw a sample of edges that's cubically bigger than n
-    # and assert all possible edges ended up in the sample
-    sample_edges = np.unique(np.vstack([L[Y == 1], R[Y == 1]]).T, axis=0)
-    assert sample_edges.shape[0] == atog(A).ecount() == A.sum()
-    
-
-def test_get_neg_sample():
-    print("test_get_neg_sample: raise NotImplementedError")
-    
-
 def test_sigmoid():
     assert sigmoid(0.) == .5
     assert sigmoid(+1e+3) == 1
