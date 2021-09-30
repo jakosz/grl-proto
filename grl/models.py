@@ -25,13 +25,15 @@ def _build_model(inputs, latent, reducer):
     return tf.nn.sigmoid(tf.reduce_sum(latent[2](e0*e1), axis=-1))
 
 
-def _compile_model(inputs, outputs):
+def _compile_model(inputs, outputs, loss, metrics):
     model = tf.keras.models.Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['binary_accuracy', 'AUC'])
+    model.compile(optimizer='adam', loss=loss, metrics)
     return model
 
 
-def get(vcount, dim, symmetric, diagonal, max_nb=1, reducer=tf.squeeze):
+def get(vcount, dim, symmetric, diagonal, 
+        loss='binary_crossentropy', metrics=['binary_accuracy', 'AUC'], 
+        max_nb=1, reducer=tf.squeeze):
     obs = vcount+1 # @1-indexing
     inputs, latent = _build_inputs(obs, dim, max_nb, symmetric, diagonal)
     outputs = _build_model(inputs, latent, reducer)
