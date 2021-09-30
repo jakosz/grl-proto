@@ -64,6 +64,18 @@ def test_get_neg_sample():
             assert not negative[i, 0] in grl.neighbours(negative[i, 1], G)
 
 
+# --- random
+
+def test_graph_random_seed():
+    for seed in [13, 14, 15]:
+        sig0, sig1 = [], []
+        for G in get_graphs(seed):
+            sig0.append(grl.graph.utils.hexdigest(G))
+        for G in get_graphs(seed):
+            sig1.append(grl.graph.utils.hexdigest(G))
+        assert all([e == f for e, f in zip(sig0, sig1)])
+
+
 # --- utils
 
 def test_enumerate_edges():
