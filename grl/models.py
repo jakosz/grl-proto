@@ -37,5 +37,5 @@ def get(vcount, dim, symmetric, diagonal,
     obs = vcount+1 # @1-indexing
     inputs, latent = _build_inputs(obs, dim, max_nb, symmetric, diagonal)
     outputs = _build_model(inputs, latent, reducer)
-    model = _compile_model(inputs, outputs)
+    model = _compile_model(inputs, outputs, loss, metrics)
     return model, latent
