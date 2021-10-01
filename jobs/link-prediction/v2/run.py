@@ -142,6 +142,6 @@ if __name__ == "__main__":
                 fu.append(embed.remote(graph, config, args.output, dim=dim, **sd, sampling=sampling, loss='binary_crossentropy'))
 
     graph, info = graph
-    grl.graph.save(f"{args.output}/{info}-graph.pkl", graph)
+    grl.graph.save(f"{args.output}/{info.name}-graph.pkl", graph)
 
 ray.get(fu)
