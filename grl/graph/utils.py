@@ -1,4 +1,5 @@
 import hashlib
+import pickle
 
 import igraph
 import numba
@@ -108,3 +109,15 @@ def to_igraph(g):
 
 def to_ogb(g):
     raise NotImplementedError
+
+
+# --- ?
+
+def save(path, graph):
+    with open(path, 'wb') as f:
+        f.write(pickle.dumps(graph))
+
+
+def load(path):
+    with open(path, 'rb') as f:
+        return pickle.loads(f.read())
