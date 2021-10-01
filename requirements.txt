@@ -1,7 +1,8 @@
 numba==0.53.1
 matplotlib==3.4.2
-numpy==1.21.0
+numpy
 pytest==6.1.1
 python-igraph==0.9.6
 scipy==1.7.0
+ray
 tensorflow==2.5.0
