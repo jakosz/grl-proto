@@ -1,6 +1,7 @@
 import argparse
 import json
 import random
+import traceback
 import yaml
 
 import numpy as np
@@ -99,17 +100,20 @@ def embed(graph,
     else:
         raise ValueError("sampling must be either nce or neg") 
 
-    model, [L, R, D] = grl.models.get(info.nodes, dim, symmetric=symmetric, diagonal=diagonal, loss=loss)
-    hist = model.fit(dg(graph, info.batch_size), steps_per_epoch=info.steps_per_epoch, epochs=info.epochs, verbose=False).history
-
     res = info.__dict__
-    res.update({
-        "auc": hist["auc"], 
-        "acc": hist["binary_accuracy"]
-    })
-
+    try:
+        model, [L, R, D] = grl.models.get(info.nodes, dim, symmetric=symmetric, diagonal=diagonal, loss=loss)
+        hist = model.fit(dg(graph, info.batch_size), steps_per_epoch=info.steps_per_epoch, epochs=info.epochs, verbose=False).history
+        res.update({
+            "auc": hist["auc"], 
+            "acc": hist["binary_accuracy"]
+        })
+    except:
+        res.update({'traceback': traceback.format_exc()})
+    
     with open(f"{output}/{info.name}.json", 'a') as f:
         f.write(json.dumps(res, cls=grl.utils.JsonNumpy) + "\n")
+
 
 
 if __name__ == "__main__":
