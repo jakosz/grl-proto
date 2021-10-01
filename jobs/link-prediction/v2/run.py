@@ -89,6 +89,8 @@ def embed(graph,
     info.epochs = t['epochs']
     info.dim = dim
     info.sampling = sampling
+    info.symmetric = symmetric
+    info.diagonal = diagonal
     
     if sampling == 'nce':
         dg = datagen_nce
