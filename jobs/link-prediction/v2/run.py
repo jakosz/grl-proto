@@ -133,4 +133,4 @@ if __name__ == "__main__":
     for dim in range(d['start'], d['end']):
         for sd in embedding_configs:
             for sampling in ['nce', 'neg']:
-                fu.append(embed.remote(graph, config, args.output, dim=dim, **sd, loss='binary_crossentropy'))
+                fu.append(embed.remote(graph, config, args.output, dim=dim, **sd, sampling=sampling, loss='binary_crossentropy'))
