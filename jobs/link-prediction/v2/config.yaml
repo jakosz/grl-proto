@@ -20,8 +20,8 @@ embedding:
   train:
     batch_size: 128
     steps_per_epoch: 1024
-    epochs: 16
+    epochs: 50 
   model:
     dim:
-      start: 1
-      end: 50
+      start: 2 
+      end: 51
