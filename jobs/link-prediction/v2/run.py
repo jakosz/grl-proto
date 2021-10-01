@@ -136,3 +136,5 @@ if __name__ == "__main__":
         for sd in embedding_configs:
             for sampling in ['nce', 'neg']:
                 fu.append(embed.remote(graph, config, args.output, dim=dim, **sd, sampling=sampling, loss='binary_crossentropy'))
+
+ray.get(fu)
