@@ -142,7 +142,7 @@ if __name__ == "__main__":
     for dim in range(d['start'], d['end']):
         
         graph, info = sample_graph(config)
-        A = grl.graph.utils.to_adjacency(g)
+        A = grl.graph.utils.to_adjacency(graph)
         val, vec = grl.graph.embed.eigen.encode(graph)
         yhat = grl.graph.embed.eigen.decode(val, vec, dim)
 
