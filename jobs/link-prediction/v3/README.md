@@ -7,3 +7,5 @@ Example usage:
 ```bash
 $ python3 run.py --config config.yaml --output results.json
 ```
+
+I takes about 3 minutes on a 96-core machine to complete one run. 
