@@ -1,0 +1,18 @@
+graph:
+  edges:
+    erdos:
+      start: 0.04
+      end: 0.04
+  nodes:
+    start: 50
+    end: 100
+    step: 50
+embedding:
+  train:
+    batch_size: 128
+    steps_per_epoch: 1024
+    epochs: 20
+  model:
+    dim:
+      start: 2
+      end: 51
