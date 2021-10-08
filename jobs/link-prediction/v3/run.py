@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
         res = info.__dict__
         
-        with open(output, 'a') as f:
+        with open(args.output, 'a') as f:
             f.write(json.dumps(res, cls=grl.utils.JsonNumpy) + "\n")
 
 
