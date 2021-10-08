@@ -4,26 +4,31 @@ import numpy as np
 
 @numba.njit()
 def degree(graph):
+    """ Get degrees of nodes in a graph. 
+    """
     v, e = graph
     return (v[1:] - v[:-1])[1:]
 
 
 @numba.njit()
 def density(graph):
-    return ecount(graph)/(vcount(graph)**2 - vcount(graph))
+    """ Get density of a graph. 
+    """
+    return ecount(graph)/(vcount(graph)**2 - vcount(graph))  # @symmetry
 
 
 @numba.njit()
 def ecount(graph):
-    """ Graph's edge count.
+    """ Get edge count of a graph.
     """
     v, e = graph
-    return e.shape[0]
+    return e.shape[0]  # @symmetry
 
 
 @numba.njit()
 def neighbours(i, graph):
-    """ Get neighbours of node i. """
+    """ Get neighbours of i-th node. 
+    """
     v, e = graph
     if v[i+1] - v[i] > 0:
         return e[v[i]:v[i] + (v[i+1] - v[i])]
@@ -33,7 +38,7 @@ def neighbours(i, graph):
 
 @numba.njit()
 def vcount(graph):
-    """ Graph's vertex count.
+    """ Get vertex count of a graph.
     """
     v, e = graph
     return v.shape[0] - 2  # first is empty, last is the length of edge array
