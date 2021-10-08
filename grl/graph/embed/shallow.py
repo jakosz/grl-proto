@@ -8,7 +8,7 @@ import grl
 def encode(graph, dim, lr, steps):
     
     cores = numba.config.NUMBA_NUM_THREADS
-    model = np.random.randn(grl.vcount(graph), dim)/dim
+    model = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
 
     for i in numba.prange(cores):
         
