@@ -100,7 +100,7 @@ def embed(config,
     
     try:
         model, [L, R, D] = grl.models.get(info.nodes, dim, symmetric=symmetric, diagonal=diagonal, loss=loss)
-        hist = model.fit(dg(graph, info.batch_size), steps_per_epoch=info.steps_per_epoch, epochs=info.epochs, verbose=False).history
+        hist = model.fit(datagen_neg(graph, info.batch_size), steps_per_epoch=info.steps_per_epoch, epochs=info.epochs, verbose=False).history
         res.update({
             "auc": hist["auc"], 
             "acc": hist["binary_accuracy"],
