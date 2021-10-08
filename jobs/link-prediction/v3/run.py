@@ -91,7 +91,7 @@ def embed(config,
     info.epochs = t['epochs']
     
     info.dim = dim
-    info.sampling = sampling
+    info.sampling = 'neg' 
     info.symmetric = symmetric
     info.diagonal = diagonal
     info.method = 'embedding'
