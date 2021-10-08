@@ -4,10 +4,15 @@
 
 #### TODO
 - [x] Conversions between three formats: igraph, adjacency, native.
-- [ ] Orthogonalization of simple embeddings. 
+- [ ] Conversions to/from OGB. 
+- [ ] Sphinx docstrings & RTD stub. 
+- [ ] List reasons to use 1-indexing.
+- [ ] AUC and accuracy computed in numba-jitted functions.
+- [ ] what's currently in `jobs` does not belong to this repository.  
+
+0.5
 - [ ] Global link prediction heuristics. 
-- [ ] Sphinx docstrings.
-- [ ] List reasons to use 1-indexing.  
+- [ ] Built-in real-world datasets.  
 
 ---
 
