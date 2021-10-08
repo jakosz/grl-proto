@@ -13,6 +13,11 @@ def degree(graph):
 
 
 @numba.njit()
+def density(graph):
+    return ecount(graph)/(vcount(graph)**2 - vcount(graph))
+
+
+@numba.njit()
 def ecount(graph):
     """ Graph's edge count.
     """
