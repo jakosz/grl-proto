@@ -70,6 +70,8 @@ def sample_graph(config):
     info.seed = random.randint(0, 2**63-1) 
     graph = getattr(grl.graph.random, info.model)(info.nodes, info.param, seed=info.seed)
     info.name = grl.graph.utils.hexdigest(graph)[:16]
+    info.edges = grl.ecount(graph)
+    info.density = grl.density(graph)
     return graph, info
 
 
