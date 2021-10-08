@@ -1,7 +1,7 @@
 This is very similar to v2, changes include: 
-* drop noise-contrastive estimation
-* fix number of nodes to 50
-* for each run sample a different graph (using the same parameters)
+* noise-contrastive estimation is not used at all (i.e. only negative sampling)
+* number of nodes is fixed to 50
+* a different graph is sampled for each run of the model (from parameters specified in the config)
 
 Example usage:
 ```bash
