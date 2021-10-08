@@ -21,7 +21,7 @@ def encode(graph, dim, lr, steps):
 
             dy = grl.sigmoid(np.sum(xL*xR)) - y[j]
 
-            cos = grl.cos_decay(j / steps//cores)
+            cos = grl.cos_decay(j / (steps//cores))
             model[x[j, 0]] = model[x[j, 0]] - xR*dy*lr*cos
             model[x[j, 1]] = model[x[j, 1]] - xL*dy*lr*cos
             
