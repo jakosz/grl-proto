@@ -19,7 +19,7 @@ def enumerate_edges(graph):
     i = 0
     for src in enumerate_nodes(graph):
         nbs = core.neighbours(src, graph)
-        if nbs[0]: # core.neighbours returns array([0]) for isolates
+        if nbs[0]:  # core.neighbours returns array([0]) for isolates
             for dst in nbs:
                 res[i, 0] = src
                 res[i, 1] = dst
@@ -37,7 +37,7 @@ def enumerate_without(graph, subset):
     """ Enumerate nodes and remove given subset from the enumeration. 
     """
     nodes = enumerate_nodes(graph)
-    for i in subset-1: # @1-indexing
+    for i in subset-1:  # @indexing
         nodes[i] = 0
     return nodes[nodes != 0]
 
