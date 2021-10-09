@@ -6,4 +6,4 @@ from .graph.core import *
 from .numby import *
 from .shmem import *
 
-__version__ = "0.4.11"
+__version__ = "0.4.13"
