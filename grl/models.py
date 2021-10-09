@@ -34,7 +34,7 @@ def _compile_model(inputs, outputs, loss, metrics):
 def get(vcount, dim, symmetric, diagonal, 
         loss='binary_crossentropy', metrics=['binary_accuracy', 'AUC'], 
         max_nb=1, reducer=tf.squeeze):
-    obs = vcount+1 # @1-indexing
+    obs = vcount+1  # @indexing
     inputs, latent = _build_inputs(obs, dim, max_nb, symmetric, diagonal)
     outputs = _build_model(inputs, latent, reducer)
     model = _compile_model(inputs, outputs, loss, metrics)

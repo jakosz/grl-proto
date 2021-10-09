@@ -6,7 +6,7 @@ import numba
 import numpy as np
 
 from . import core
-from .mem import *
+from ..shmem import *
 
 
 def digest(graph):
