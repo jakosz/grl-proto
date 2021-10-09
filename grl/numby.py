@@ -47,3 +47,8 @@ def random_randn(x):
 @numba.njit(fastmath=True)
 def sigmoid(x):
     return 1/(1+np.e**-x)
+
+
+@numba.njit(fastmath=True)
+def softmax(x):
+    return np.exp(x)/np.sum(np.exp(x)) 
