@@ -7,7 +7,7 @@ from multiprocessing import RawArray as _RawArray
 
 import numpy as _np
 
-from ..numby import random_randn
+from ..numby import random_randn_fill_inplace
 from . import _obj
 
 
@@ -44,7 +44,7 @@ def ls():
 
 def randn(*shape):
     x = empty(shape, dtype=_np.float32)
-    random_randn(x)
+    random_randn_fill_inplace(x)
     return x
 
 

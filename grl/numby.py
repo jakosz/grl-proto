@@ -2,20 +2,32 @@ import numba
 import numpy as np
 
 
+EPSILON = 1e-7
+
+
 @numba.njit(fastmath=True)
 def binary_crossentropy(p, q):
-    q = clip(q, 1e-7, 1-1e-7)
-    return -np.mean(p*np.log(q) + (1-p)*np.log(1-q))
+    return -np.mean(p*np.log(q+EPSILON) + (1-p)*np.log(1-q+EPSILON))
 
 
 @numba.njit(fastmath=True)
-def clip(x, lower, upper):
+def clip_1d(x, lower, upper):
+    x = x.copy()
     for i in range(x.shape[0]):
         if x[i] < lower:
             x[i] = lower
         if x[i] > upper:
             x[i] = upper
     return x
+
+
+@numba.njit(fastmath=True)
+def clip_1d_inplace(x, lower, upper):
+    for i in range(x.shape[0]):
+        if x[i] < lower:
+            x[i] = lower
+        if x[i] > upper:
+            x[i] = upper
 
 
 @numba.njit(fastmath=True)
@@ -37,16 +49,16 @@ def random_choice(x, s, w):
 
 
 @numba.njit(fastmath=True, parallel=True)
-def random_randn(x):
-    """ Fill an array with gaussian noise.  
+def random_randn_fill_inplace(x):
+    """ Fill an array with gaussian noise scaled down by its dimension. 
     """
     for i in numba.prange(x.shape[0]):
-        x[i] = np.random.randn(x.shape[1])
+        x[i] = np.random.randn(x.shape[1])/x.shape[1]
 
 
 @numba.njit(fastmath=True)
 def sigmoid(x):
-    return 1/(1+np.e**-x)
+    return 1/(1+np.exp(-x))
 
 
 @numba.njit(fastmath=True)

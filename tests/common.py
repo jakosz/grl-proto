@@ -1,6 +1,7 @@
 import random
 
 import igraph
+import numpy as np
 import pytest
 
 import grl
@@ -36,3 +37,23 @@ def graphs():
         ]
     
     return get_graphs
+
+
+@pytest.fixture(scope="module")
+def random_binomial_2d():
+
+    def wrap(shape=(32, 32), seed=13):
+        np.random.seed(seed)
+        return np.random.binomial(1, .5, size=shape)
+
+    return wrap
+
+
+@pytest.fixture(scope="module")
+def random_normal_2d():
+
+    def wrap(shape=(32, 32), seed=13):
+        np.random.seed(seed)
+        return np.random.randn(*shape)
+
+    return wrap
