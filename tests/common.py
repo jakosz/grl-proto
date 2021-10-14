@@ -7,6 +7,10 @@ import pytest
 import grl
 
 
+class Namespace:
+    pass
+
+
 @pytest.fixture(scope="module")
 def igraphs():
 
@@ -37,6 +41,22 @@ def graphs():
         ]
     
     return get_graphs
+
+
+@pytest.fixture(scope="module")
+def ogb_dataset():
+    
+    def wrap(name):
+        if name == 'zachary':
+            ogb_zachary = np.array([(e.source, e.target) for e in igraph.Graph.Famous('Zachary').es()]).T
+            zachary = Namespace()
+            zachary.graph = {
+                'edge_index': ogb_zachary, 
+                'num_nodes': igraph.Graph.Famous('Zachary').vcount()
+            }
+            return zachary
+
+    return wrap
 
 
 @pytest.fixture(scope="module")
