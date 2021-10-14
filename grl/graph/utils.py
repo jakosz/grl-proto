@@ -46,8 +46,8 @@ def enumerate_without(graph, subset):
 def from_adjacency(A):
     """ Convert adjacency matrix to grl graph representation.
     """
-    nodes = zeros(A.shape[0]+2, dtype=np.uint64)
-    edges = zeros(A.sum(), dtype=np.uint32)
+    nodes = np.zeros(A.shape[0]+2, dtype=np.uint64)
+    edges = np.zeros(A.sum(), dtype=np.uint32)
     cnt = 0
     for i in range(A.shape[0]):
         for j in range(A.shape[1]):
@@ -62,8 +62,8 @@ def from_igraph(g):
     """ Convert igraph.Graph to grl graph representation.
         Note: currently it assumes a symmetric graph to be passed. 
     """
-    nodes = zeros((g.vcount()+2,), dtype=np.uint64)
-    edges = zeros((g.ecount()*2,), dtype=np.uint32)
+    nodes = np.zeros((g.vcount()+2,), dtype=np.uint64)
+    edges = np.zeros((g.ecount()*2,), dtype=np.uint32)
     offset = 0
     for v in g.vs:
         i = v.index
@@ -91,8 +91,8 @@ def from_ogb(dataset):
     assert np.all(np.unique(diff) == np.array([0, 1])),  "edgelist not sorted"
     ix = np.hstack([0, np.where(diff)[0] + 1, ecount])  # node boundaries
 
-    nodes = zeros((vcount+2,), dtype=np.uint64)
-    edges = zeros((ecount,), dtype=np.uint32)
+    nodes = np.zeros((vcount+2,), dtype=np.uint64)
+    edges = np.zeros((ecount,), dtype=np.uint32)
     offset = 0
 
     for i in range(ix.shape[0]-1):
