@@ -63,4 +63,4 @@ def sigmoid(x):
 
 @numba.njit(fastmath=True)
 def softmax(x):
-    return np.exp(x)/np.sum(np.exp(x)) 
+    return np.exp(x)/np.sum(np.exp(x))
