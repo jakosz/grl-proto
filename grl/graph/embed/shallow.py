@@ -86,7 +86,7 @@ def _encode_asymmetric(graph, dim, lr, steps):
 
 @numba.njit()
 def _decode_diagonal(model, diag, dim=None):
-    model = model if dim is None else model[:, :dim]
+    model = model[1:] if dim is None else model[1:, :dim]  # @indexing
     diag = diag if dim is None else diag[:dim]
     model = model*diag
     return grl.sigmoid(model.dot(model.T))
@@ -94,12 +94,12 @@ def _decode_diagonal(model, diag, dim=None):
 
 @numba.njit()
 def _decode_asymmetric(L, R, dim=None):
-    L = L if dim is None else L[:, :dim]
-    R = R if dim is None else R[:, :dim]
+    L = L[1:] if dim is None else L[1:, :dim]  # @indexing
+    R = R[1:] if dim is None else R[1:, :dim]  # @indexing
     return grl.sigmoid(L.dot(R.T))
 
 
 @numba.njit()
 def _decode_symmetric(model, dim=None):
-    model = model if dim is None else model[:, :dim]
+    model = model[1:] if dim is None else model[1:, :dim]  # @indexing
     return grl.sigmoid(model.dot(model.T))
