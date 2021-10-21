@@ -5,7 +5,7 @@ import grl
 
 
 @numba.njit(fastmath=True, parallel=True)
-def diagonal(graph, dim, lr, steps):
+def encode(graph, dim, lr, steps):
 
     cores = numba.config.NUMBA_NUM_THREADS
     model = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
