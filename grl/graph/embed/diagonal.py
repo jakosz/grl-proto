@@ -37,4 +37,4 @@ def encode(graph, dim, lr, steps):
 def decode(model, diag, dim=None):
     model = model[1:] if dim is None else model[1:, :dim]  # @indexing
     diag = diag if dim is None else diag[:dim]
-    return grl.sigmoid(grl.sigmoid(model.dot(np.diag(diag)).dot(model.T)))
+    return grl.sigmoid(model.dot(np.diag(diag)).dot(model.T))
