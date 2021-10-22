@@ -43,6 +43,11 @@ def get_nce_sample(graph, n):
     for i in range(n):
         X[n+i] = get_random_pair(graph)
         
+    # shuffle
+    srt = np.arange(n*2)
+    np.random.shuffle(srt)
+    X, Y = X[srt], Y[srt]
+
     return X, Y
 
 
@@ -59,6 +64,11 @@ def get_neg_sample(graph, n):
         
     for i in range(n):
         X[n+i] = get_random_anti_edge(graph)
+    
+    # shuffle
+    srt = np.arange(n*2)
+    np.random.shuffle(srt)
+    X, Y = X[srt], Y[srt]
         
     return X, Y
 
