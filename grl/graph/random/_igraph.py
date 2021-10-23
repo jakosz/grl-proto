@@ -7,7 +7,7 @@ from ..utils import from_igraph as _from_igraph
 
 def barabasi(n, m, seed=None):
     _random.seed(seed)
-    g = _igraph.Graph.Barabasi(n, m)
+    g = _igraph.Graph.Barabasi(n, int(m))
     return _from_igraph(g)
 
 
