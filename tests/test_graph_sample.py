@@ -18,8 +18,8 @@ def test_get_neg_sample(graphs):
     for G in graphs():
         edgelist, y = grl.graph.sample.neg(G, 2048)
         edgelist = edgelist[np.argsort(y)]
-        positive = edgelist[:1024]
-        negative = edgelist[1024:]
+        positive = edgelist[1024:]
+        negative = edgelist[:1024]
         for i in range(negative.shape[0]):
             assert positive[i, 1] in grl.neighbours(positive[i, 0], G)
             assert positive[i, 0] in grl.neighbours(positive[i, 1], G)    
