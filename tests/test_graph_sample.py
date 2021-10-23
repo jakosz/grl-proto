@@ -16,7 +16,8 @@ def test_get_nce_sample():
 
 def test_get_neg_sample(graphs):
     for G in graphs():
-        edgelist = grl.graph.sample.neg(G, 2048)[0]
+        edgelist, y = grl.graph.sample.neg(G, 2048)
+        edgelist = edgelist[np.argsort(y)]
         positive = edgelist[:1024]
         negative = edgelist[1024:]
         for i in range(negative.shape[0]):
