@@ -6,4 +6,8 @@ from .graph.core import *
 from .numby import *
 from .shmem import *
 
-__version__ = "0.4.18"
+__version__ = "0.4.19"
+
+# constants
+CLIP = 5.0
+EPSILON = 1e-7

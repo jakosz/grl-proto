@@ -22,9 +22,14 @@ def encode(graph, dim, lr, steps):
 
             dy = grl.sigmoid(np.sum(xL*xR)) - y[j]
 
+            dxL = xR*dy
+            dxR = xL*dy
+            grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
+            grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
+
             cos = grl.cos_decay(j / (steps//cores))
-            L[x[j, 0]] = L[x[j, 0]] - xR*dy*lr*cos
-            R[x[j, 1]] = R[x[j, 1]] - xL*dy*lr*cos
+            L[x[j, 0]] -= dxL*lr*cos
+            R[x[j, 1]] -= dxR*lr*cos
             
     return L, R
 

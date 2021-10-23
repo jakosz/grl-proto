@@ -24,11 +24,16 @@ def encode(graph, dim, lr, steps):
 
             dxLR = diag*dy
             ddiag = xL*xR*dy
+            dxL = xR*dxLR
+            dxR = xL*dxLR
+            grl.clip_1d_inplace(ddiag, -grl.CLIP, grl.CLIP)
+            grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
+            grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
 
             cos = grl.cos_decay(j / (steps//cores))
-            model[x[j, 0]] = model[x[j, 0]] - xR*dxLR*lr*cos
-            model[x[j, 1]] = model[x[j, 1]] - xL*dxLR*lr*cos
-            diag[:] = diag - ddiag*lr*cos
+            model[x[j, 0]] -= dxL*lr*cos
+            model[x[j, 1]] -= dxR*lr*cos
+            diag[:] -= ddiag*lr*cos
 
     return model, diag
 
