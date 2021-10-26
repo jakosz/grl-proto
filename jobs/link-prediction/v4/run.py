@@ -17,17 +17,16 @@ p.add_argument('--iter', type=int)
 p.add_argument('--output', type=str, default='link-prediction-v4.json')
 args, _ = p.parse_known_args()
 
-
 config.vcount = args.vcount
-config.dims = range(2, args.dims)
-
+if args.iter is not None:
+    config.iter = args.iter
 
 cnt = 0
 times = 2.  # running average for printing info
 for run in range(args.runs):
     for emb_name, emb_model in embs.items():
         for rgm_name, rgm_model in rgms.items():
-            for dim in dims:
+            for dim in range(2, args.dims):
                 try:
                     g = rgm_model()
                     t0 = time.time()
