@@ -21,8 +21,7 @@ config.vcount = args.vcount
 if args.iter is not None:
     config.iter = args.iter
 
-cnt = 0
-times = 2.  # running average for printing info
+times = RunningAverage()
 for run in range(args.runs):
     for emb_name, emb_model in embs.items():
         for rgm_name, rgm_model in rgms.items():
@@ -45,9 +44,8 @@ for run in range(args.runs):
                     with open(args.output, 'a') as f:
                         f.write(json.dumps(res, cls=JsonNumpy) + "\n")
 
-                    cnt += 1
-                    times = times*.99 + (t1-t0)*.01
-                    print(f"{cnt:,} models total - {times:.04f} sec./run    ", end="\r", flush=True)
+                    times(t1-t0)
+                    print(f"\n\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
                 except:
                     with open('exceptions.txt', 'a') as f:
                         f.write(traceback.format_exc() + f"\n\n\n{'-'*80}\n\n\n")

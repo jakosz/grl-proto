@@ -9,6 +9,21 @@ class Namespace:
     pass
 
 
+class RunningAverage:
+    def __init__(self, n=100):
+        self.count = 0
+        self.n = n
+        self.p = 1/n
+        self.value = 0.
+
+    def __call__(self, x):
+        """ Update with new value and return average."""
+        self.count += 1
+        p = 1/min(self.count, self.n)
+        self.value = self.value*(1-p) + x*p
+        return self.value
+
+
 def properties(g):
     a = grl.graph.utils.to_adjacency(g)
     g = grl.graph.utils.to_igraph(g)
