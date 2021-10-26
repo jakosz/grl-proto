@@ -45,7 +45,7 @@ for run in range(args.runs):
                         f.write(json.dumps(res, cls=JsonNumpy) + "\n")
 
                     times(t1-t0)
-                    print(f"\n\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
+                    print(f"\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
                 except:
                     with open('exceptions.txt', 'a') as f:
                         f.write(traceback.format_exc() + f"\n\n\n{'-'*80}\n\n\n")
