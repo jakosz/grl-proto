@@ -19,7 +19,7 @@ def properties(g):
         'diameter': g.diameter(),
         'density': g.density(),
         'edge_connectivity': g.edge_connectivity(),
-        'entropy': scipy.stats.entropy(a.ravel(), base=2),
+        'entropy': entropy(a.ravel(), base=2),
         'girth': g.girth(),
         'independence_number': g.independence_number(),
         'is_bipartite': g.is_bipartite(),
