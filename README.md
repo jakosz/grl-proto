@@ -3,17 +3,23 @@
 ---
 
 #### TODO
-- [x] Conversions between three formats: igraph, adjacency, native.
-- [ ] Sphinx docstrings & RTD stub. 
-- [ ] List reasons to use 1-indexing.
+- [ ] handy embedding evaluation method (with eigen as a reference)
+- [ ] refactor redundant embed API 
 - [ ] AUC and accuracy computed in numba-jitted functions.
-- [ ] is what's currently in `jobs` really belong to this repository? 
-- [ ] port graph to shmem 
 
 0.5
-- [ ] all three flavours of shallow embedding implemented in grl 
-- [ ] Conversions to/from OGB.
+- [x] all three flavours of shallow embedding implemented in grl 
+- [~] Conversions to/from OGB.
 
+
+#### DOCUMENTATION 
+- [ ] Sphinx docstrings & RTD stub. 
+- [ ] List reasons to use 1-indexing.
+- [ ] grl vs tf benchmarks
+
+#### OTHER
+- [ ] is what's currently in `jobs` really belong to this repository? 
+- [ ] port graph to shmem 
 - [ ] Global link prediction heuristics. 
 - [ ] Built-in real-world datasets.  
 
