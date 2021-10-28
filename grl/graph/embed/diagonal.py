@@ -2,20 +2,22 @@ import numba
 import numpy as np
 
 import grl
+from . import _utils
 
 
 @numba.njit(fastmath=True, parallel=True)
 def encode(graph, dim, lr, steps):
 
     cores = numba.config.NUMBA_NUM_THREADS
+    n = _utils.split_steps(steps, cores)
     model = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
     diag = np.random.randn(dim)
 
     for i in numba.prange(cores):
 
-        x, y = grl.graph.sample.neg(graph, steps//cores)
+        x, y = grl.graph.sample.neg(graph, n)
 
-        for j in range(steps//cores):
+        for j in range(n):
 
             xL = model[x[j, 0]]
             xR = model[x[j, 1]]
@@ -30,7 +32,7 @@ def encode(graph, dim, lr, steps):
             grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
             grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
 
-            cos = grl.cos_decay(j / (steps//cores))
+            cos = grl.cos_decay(j/n)
             model[x[j, 0]] -= dxL*lr*cos
             model[x[j, 1]] -= dxR*lr*cos
             diag[:] -= ddiag*lr*cos

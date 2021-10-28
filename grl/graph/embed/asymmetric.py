@@ -2,13 +2,14 @@ import numba
 import numpy as np
 
 import grl
-from _embed import *
+from . import _utils 
+
 
 @numba.njit(fastmath=True, parallel=True)
 def encode(graph, dim, lr, steps):
     
     cores = numba.config.NUMBA_NUM_THREADS
-    n = _embed_batch_size(steps, cores)
+    n = _utils.split_steps(steps, cores)
     L = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
     R = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
 
