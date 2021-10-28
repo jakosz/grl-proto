@@ -3,14 +3,12 @@
 ---
 
 #### TODO
-- [ ] handy embedding evaluation method (with eigen as a reference)
+- [ ] handy embedding evaluation method (with eigen as a reference): encode-decode-evaluate
 - [ ] refactor redundant embed API 
 - [ ] AUC and accuracy computed in numba-jitted functions.
 
-0.5
-- [x] all three flavours of shallow embedding implemented in grl 
-- [~] Conversions to/from OGB.
-
+#### BUGS
+- [ ] shallow embedding causes segmentation fault on EC2 machines, but not on Hetzner machines
 
 #### DOCUMENTATION 
 - [ ] Sphinx docstrings & RTD stub. 
