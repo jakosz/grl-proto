@@ -6,7 +6,7 @@ from .graph.core import *
 from .numby import *
 from .shmem import *
 
-__version__ = "0.4.19"
+__version__ = "0.4.20"
 
 # constants
 CLIP = 5.0
