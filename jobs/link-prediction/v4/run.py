@@ -37,7 +37,6 @@ for run in range(args.runs):
                         'dim': dim,
                         'eigen': eigen(g, dim),
                         'emb': emb_name,
-                        'properties': properties(g),
                         'rgm': rgm_name
                     }
 
