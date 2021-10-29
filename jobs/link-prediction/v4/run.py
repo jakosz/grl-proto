@@ -39,7 +39,9 @@ for run in range(args.runs):
                         'emb': emb_name,
                         'rgm': rgm_name,
                         'density': grl.density(g),
-                        'vcount': grl.vcount(g)
+                        'vcount': grl.vcount(g),
+                        'ecount': grl.ecount(g),
+                        'iter': config.iter
                     }
 
                     with open(args.output, 'a') as f:
