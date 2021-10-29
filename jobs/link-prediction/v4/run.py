@@ -4,7 +4,8 @@ import json
 import time
 import traceback
 
-from grl.utils import get_stdout_logger, JsonNumpy
+from grl.utils import JsonNumpy
+from grl.utils.log import get_stdout_logger
 
 from src import *
 
