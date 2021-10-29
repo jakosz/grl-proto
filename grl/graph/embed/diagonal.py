@@ -26,7 +26,7 @@ def worker(x, y, E, D, lr):
         cos = grl.cos_decay(j/n)
         E[x[j, 0]] -= dxL*lr*cos
         E[x[j, 1]] -= dxR*lr*cos
-        D[:] -= dD*lr*cos
+        D[0] -= dD*lr*cos
 
 
 def worker_mp_wrapper(graph, steps, name_E, name_D, lr):
@@ -59,14 +59,14 @@ def encode(graph, dim, steps, lr=.025):
     name_E = grl.utils.random_hex()
     name_D = grl.utils.random_hex()
     E = grl.randn((grl.vcount(graph)+1, dim), name_E)  # node embedding @indexing
-    D = grl.randn((dim,), name_D)  # diagonal
+    D = grl.randn((1, dim), name_D)  # diagonal
     
     # fit the model 
     with ProcessPoolExecutor(grl.CORES) as p:
         for core in range(cores):
             p.submit(worker_mp_wrapper, graph, n, name_E, name_D, lr)
     
-    return grl.get(name_E), grl.get(name_D)
+    return grl.get(name_E), grl.get(name_D).ravel()
 
 
 @numba.njit()
