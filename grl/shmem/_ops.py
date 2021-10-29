@@ -24,7 +24,7 @@ def empty(shape, dtype, name=None):
 
 
 def empty_like(x, name=None):
-    return empty(x.shape, x.dtype.dtype, name=name)
+    return empty(x.shape, x.dtype, name=name)
 
 
 def get(name):
