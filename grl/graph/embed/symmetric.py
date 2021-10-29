@@ -50,7 +50,7 @@ def encode_st(graph, dim, steps, lr=.025):
     E = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
     x, y = grl.graph.sample.neg(graph, steps)
     worker(x, y, E, lr)
-    return model
+    return E 
 
 
 @numba.njit(cache=True)
