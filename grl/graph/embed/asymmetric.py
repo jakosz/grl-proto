@@ -44,7 +44,7 @@ def encode(graph, dim, steps, lr=.025):
     return grl.get(name_L), grl.get(name_R)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def encode_st(graph, dim, steps, lr=.025):
     """ Single-threaded embedding. 
         Most efficient on graphs of up to 100 vertices. 
@@ -56,7 +56,7 @@ def encode_st(graph, dim, steps, lr=.025):
     return L, R 
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def decode(L, R, dim=None):
     L = L[1:] if dim is None else L[1:, :dim]  # @indexing
     R = R[1:] if dim is None else R[1:, :dim]  # @indexing

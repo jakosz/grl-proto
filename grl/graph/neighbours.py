@@ -7,7 +7,7 @@ from . import core
     to have a starting node at the origin (e.g. arr[0, 0, 0] in 3d case)
 """
 
-@numba.njit()
+@numba.njit(cache=True)
 def _fill_node_nb_1d(arr, graph):
     nb = core.neighbours(arr[0], graph)
     if nb.size > arr.size-1:
@@ -15,21 +15,21 @@ def _fill_node_nb_1d(arr, graph):
     arr[1:nb.shape[0]+1] = nb
 
     
-@numba.njit()
+@numba.njit(cache=True)
 def _fill_node_nb_2d(arr, graph):
     _fill_node_nb_1d(arr[:, 0], graph)
     for i in range(1, arr.shape[1]):
         _fill_node_nb_1d(arr[i, :], graph)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def _fill_node_nb_3d(arr, graph):
     _fill_node_nb_2d(arr[:, :, 0], graph)
     for i in range(1, arr.shape[2]):
         _fill_node_nb_2d(arr[i, :, :], graph)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def _fill_node_nb_4d(arr, graph):
     _fill_node_nb_3d(arr[:, :, :, 0], graph)
     for i in range(1, arr.shape[3]):
@@ -40,28 +40,28 @@ def _fill_node_nb_4d(arr, graph):
 """
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def _get_node_nb_tensor_1d(vi, max_nb):
     ix = np.zeros((max_nb), dtype=np.uint32)
     ix[0] = vi
     return ix
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def _get_node_nb_tensor_2d(vi, max_nb):
     ix = np.zeros((max_nb, max_nb), dtype=np.uint32)
     ix[0, 0] = vi
     return ix
     
 
-@numba.njit()
+@numba.njit(cache=True)
 def _get_node_nb_tensor_3d(vi, max_nb):
     ix = np.zeros((max_nb, max_nb, max_nb), dtype=np.uint32)
     ix[0, 0, 0] = vi
     return ix
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def _get_node_nb_tensor_4d(vi, max_nb):
     ix = np.zeros((max_nb, max_nb, max_nb, max_nb), dtype=np.uint32)
     ix[0, 0, 0, 0] = vi
@@ -76,28 +76,28 @@ def _get_node_nb_tensor_4d(vi, max_nb):
 """
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def neighbourhood_1d(vi, graph, max_nb):
     res = _get_node_nb_tensor_1d(vi, max_nb)
     _fill_node_nb_1d(res, graph)
     return res
         
 
-@numba.njit()
+@numba.njit(cache=True)
 def neighbourhood_2d(vi, graph, max_nb):
     res = _get_node_nb_tensor_2d(vi, max_nb)
     _fill_node_nb_2d(res, graph)
     return res
     
 
-@numba.njit()
+@numba.njit(cache=True)
 def neighbourhood_3d(vi, graph, max_nb):
     res = _get_node_nb_tensor_3d(vi, max_nb)
     _fill_node_nb_3d(res, graph)
     return res
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def neighbourhood_4d(vi, graph, max_nb):
     res = _get_node_nb_tensor_4d(vi, max_nb)
     _fill_node_nb_4d(res, graph)

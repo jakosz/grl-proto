@@ -1,7 +1,7 @@
 import numba
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def split_steps(steps, cores):
     # Calculate the number of iterations to be performed on each thread. 
     # This number needs to be even because samplers return n//2 positives 

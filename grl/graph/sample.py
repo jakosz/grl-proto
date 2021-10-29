@@ -5,7 +5,7 @@ from . import core
 from . import utils
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_random_anti_edge(graph):
     """ Sample a random nonexistent edge. """
     src = np.random.choice(graph[1])
@@ -15,7 +15,7 @@ def get_random_anti_edge(graph):
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_random_edge(graph):
     """ Sample a random existing edge. """
     src = np.random.choice(graph[1])
@@ -23,13 +23,13 @@ def get_random_edge(graph):
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_random_pair(graph):
     """ Sample a random pair of nodes. """
     return np.random.choice(utils.enumerate_nodes(graph), 2).astype(graph[1].dtype)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_nce_sample(graph, n):
     """ Sample edges with noise contrast. 
     """
@@ -51,7 +51,7 @@ def get_nce_sample(graph, n):
     return X, Y
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_neg_sample(graph, n):
     """ Sample edges with negative contrast. 
     """

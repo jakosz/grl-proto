@@ -2,7 +2,7 @@ import numba
 import numpy as np
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def degree(graph):
     """ Get degrees of nodes in a graph. 
     """
@@ -10,14 +10,14 @@ def degree(graph):
     return (v[1:] - v[:-1])[1:]
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def density(graph):
     """ Get density of a graph. 
     """
     return ecount(graph)/(vcount(graph)**2 - vcount(graph))  # @symmetry
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def ecount(graph):
     """ Get edge count of a graph.
     """
@@ -25,7 +25,7 @@ def ecount(graph):
     return e.shape[0]  # @symmetry
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def neighbours(i, graph):
     """ Get neighbours of i-th node. 
     """
@@ -36,7 +36,7 @@ def neighbours(i, graph):
         return np.array([0], dtype=e.dtype)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def vcount(graph):
     """ Get vertex count of a graph.
     """

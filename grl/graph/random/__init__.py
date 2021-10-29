@@ -1,12 +1,17 @@
-import numba as _numba
-import numpy as _np
+import numba as numba
+import numpy as np
 
 from ._igraph import *
 
 
-@_numba.njit()
+__all__ = [
+    "seed"
+]
+
+
+@numba.njit(cache=True)
 def seed(seed=None):
     """ Set seed for numba jitted functions. 
     """
     if seed is not None:
-        _np.random.seed(seed)
+        np.random.seed(seed)

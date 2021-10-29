@@ -13,7 +13,7 @@ def digest(graph):
     return hashlib.sha256(b"".join([e.tobytes() for e in graph])).digest()
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def enumerate_edges(graph):
     res = np.empty((core.ecount(graph), 2), dtype=graph[1].dtype)
     i = 0
@@ -27,12 +27,12 @@ def enumerate_edges(graph):
     return res
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def enumerate_nodes(graph):
     return (np.arange(core.vcount(graph))+1).astype(graph[1].dtype)
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def enumerate_without(graph, subset):
     """ Enumerate nodes and remove given subset from the enumeration. 
     """
@@ -42,7 +42,7 @@ def enumerate_without(graph, subset):
     return nodes[nodes != 0]
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def from_adjacency(A):
     """ Convert adjacency matrix to grl graph representation.
     """
@@ -110,7 +110,7 @@ def hexdigest(graph):
     return digest(graph).hex()
 
 
-@numba.njit(parallel=True)
+@numba.njit(cache=True, parallel=True)
 def to_adjacency(graph):
     n = core.vcount(graph)
     A = np.zeros((n, n), dtype=np.uint8)
