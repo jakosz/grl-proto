@@ -8,7 +8,7 @@ from . import _utils
 
 
 @numba.njit(fastmath=True, cache=True)
-def worker(x, y, L, R, lr)
+def worker(x, y, L, R, lr):
     n = x.shape[0]
     for j in range(n):
         xL = L[x[j, 0]]
