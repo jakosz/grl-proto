@@ -3,7 +3,7 @@
 from . import embed
 
 
-asymmetric = embed.symmetric.decode
+asymmetric = embed.asymmetric.decode
 diagonal = embed.diagonal.decode
 eigen = embed.eigen.decode
 symmetric = embed.symmetric.decode
