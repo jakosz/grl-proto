@@ -59,7 +59,7 @@ def encode(graph, dim, steps, lr=.025):
     name_E = grl.utils.random_hex()
     name_D = grl.utils.random_hex()
     E = grl.randn((grl.vcount(graph)+1, dim), name_E)  # node embedding @indexing
-    D = grl.empty((dim,), name_D)  # diagonal
+    D = grl.empty((dim,), np.float32, name_D)  # diagonal
     D[:] = np.random.randn(dim)/dim
     
     # fit the model 
