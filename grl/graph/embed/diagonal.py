@@ -26,7 +26,7 @@ def worker(x, y, E, D, lr):
         cos = grl.cos_decay(j/n)
         E[x[j, 0]] -= dxL*lr*cos
         E[x[j, 1]] -= dxR*lr*cos
-        D[0] -= dD*lr*cos
+        D[:] -= dD*lr*cos
 
 
 def worker_mp_wrapper(graph, steps, name_E, name_D, lr):
@@ -59,7 +59,8 @@ def encode(graph, dim, steps, lr=.025):
     name_E = grl.utils.random_hex()
     name_D = grl.utils.random_hex()
     E = grl.randn((grl.vcount(graph)+1, dim), name_E)  # node embedding @indexing
-    D = grl.randn((1, dim), name_D)  # diagonal
+    D = grl.empty((dim,), name_D)  # diagonal
+    D[:] = np.random.randn(dim)/dim
     
     # fit the model 
     with ProcessPoolExecutor(grl.CORES) as p:
