@@ -14,12 +14,16 @@ p.add_argument('--runs', type=int)
 p.add_argument('--dims', type=int, help='Upper limit of dimensions to scan')
 p.add_argument('--vcount', type=int)
 p.add_argument('--iter', type=int)
+p.add_argument('--st', action='store_true', help='Use single-threaded implementation')
 p.add_argument('--output', type=str, default='link-prediction-v4.json')
 args, _ = p.parse_known_args()
 
 config.vcount = args.vcount
 if args.iter is not None:
     config.iter = args.iter
+
+if args.st:
+    embs = embs_st
 
 times = RunningAverage()
 for run in range(args.runs):

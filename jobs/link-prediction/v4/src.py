@@ -88,10 +88,36 @@ def asymmetric(graph, dim):
     return roc_auc_score(a.ravel(), y.ravel())
 
 
+def diagonal_st(graph, dim):
+    a = grl.graph.utils.to_adjacency(graph)
+    x, d = grl.graph.embed.diagonal.encode_st(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.diagonal(x, d)
+    return roc_auc_score(a.ravel(), y.ravel())
+
+
+def symmetric_st(graph, dim):
+    a = grl.graph.utils.to_adjacency(graph)
+    x = grl.graph.embed.symmetric.encode_st(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.symmetric(x)
+    return roc_auc_score(a.ravel(), y.ravel())
+
+
+def asymmetric_st(graph, dim):
+    a = grl.graph.utils.to_adjacency(graph)
+    l, r = grl.graph.embed.asymmetric.encode_st(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.asymmetric(l, r)
+    return roc_auc_score(a.ravel(), y.ravel())
+
 embs = {
     'diagonal': diagonal, 
     'symmetric': symmetric, 
-    'asymmetric': asymmetric
+    'asymmetric': asymmetric,
+}
+    
+embs_st = {
+    'diagonal': diagonal_st, 
+    'symmetric': symmetric_st, 
+    'asymmetric': asymmetric_st
 }
 
 rgms = {
