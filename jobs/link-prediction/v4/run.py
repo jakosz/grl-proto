@@ -15,6 +15,7 @@ p.add_argument('--dims', type=int, help='Upper limit of dimensions to scan')
 p.add_argument('--vcount', type=int)
 p.add_argument('--iter', type=int)
 p.add_argument('--st', action='store_true', help='Use single-threaded implementation')
+p.add_argument('--verbose', action='store_true', help='Display job status') 
 p.add_argument('--output', type=str, default='link-prediction-v4.json')
 args, _ = p.parse_known_args()
 
@@ -59,6 +60,7 @@ for run in range(args.runs):
                         f.write(json.dumps(res, cls=JsonNumpy) + "\n")
 
                     times(t1-t0)
-                    print(f"\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
+                    if args.verbose:
+                        print(f"\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
                 except:
                     log.error(f"Failed to embed {rgm_name} graph using {emb_name} model. vcount={grl.vcount(g)}, ecount={grl.ecount(g)}, dim={dim}")
