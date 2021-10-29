@@ -62,29 +62,29 @@ def geometric():
 
 def eigen(graph, dim):
     a = grl.graph.utils.to_adjacency(graph)
-    l, v = grl.graph.embed.eigen.encode(graph)
-    y = grl.graph.embed.eigen.decode(l, v, dim)
+    l, v = grl.graph.encode.eigen(graph)
+    y = grl.graph.decode.eigen(l, v, dim)
     return roc_auc_score(a.ravel(), y.ravel())
 
 
 def diagonal(graph, dim):
     a = grl.graph.utils.to_adjacency(graph)
-    x, d = grl.graph.embed.diagonal.encode(graph, dim, config.lr, config.iter)
-    y = grl.graph.embed.diagonal.decode(x, d)
+    x, d = grl.graph.encode.diagonal(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.diagonal(x, d)
     return roc_auc_score(a.ravel(), y.ravel())
 
 
 def symmetric(graph, dim):
     a = grl.graph.utils.to_adjacency(graph)
-    x = grl.graph.embed.symmetric.encode(graph, dim, config.lr, config.iter)
-    y = grl.graph.embed.symmetric.decode(x)
+    x = grl.graph.encode.symmetric(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.symmetric(x)
     return roc_auc_score(a.ravel(), y.ravel())
 
 
 def asymmetric(graph, dim):
     a = grl.graph.utils.to_adjacency(graph)
-    l, r = grl.graph.embed.asymmetric.encode(graph, dim, config.lr, config.iter)
-    y = grl.graph.embed.asymmetric.decode(l, r)
+    l, r = grl.graph.encode.asymmetric(graph, dim, config.iter, config.lr)
+    y = grl.graph.decode.asymmetric(l, r)
     return roc_auc_score(a.ravel(), y.ravel())
 
 
@@ -104,6 +104,6 @@ config = Namespace()
 config.vcount = None  # passed from the caller
 config.iter = 2**21 
 config.lr = .025
-config.range_barabasi = lambda: np.random.choice(np.arange(2, 41))
+config.range_barabasi = lambda: np.random.choice(np.arange(2, config.vcount))
 config.range_erdos = lambda: np.random.uniform()
 config.range_geometric = lambda: np.random.uniform()
