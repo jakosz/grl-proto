@@ -1,3 +1,5 @@
+from concurrent.futures import ProcessPoolExecutor
+
 import numba
 import numpy as np
 
@@ -5,33 +7,51 @@ import grl
 from . import _utils 
 
 
-@numba.njit(fastmath=True, parallel=True)
-def encode(graph, dim, lr, steps):
+@numba.njit(fastmath=True, cache=True)
+def worker(x, y, E, lr):
+    n = x.shape[0]    
+    for i in range(n):
+        xL = E[x[i, 0]]
+        xR = E[x[i, 1]]
+        # compute gradients
+        dy = grl.sigmoid(np.sum(xL*xR)) - y[i]
+        dxL = xR*dy
+        dxR = xL*dy
+        grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
+        grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
+        # update embedding
+        cos = grl.cos_decay(i/n)
+        E[x[i, 0]] = E[x[i, 0]] - dxL*lr*cos
+        E[x[i, 1]] = E[x[i, 1]] - dxR*lr*cos
+        
+
+def worker_mp_wrapper(graph, steps, name, lr):
+    x, y = grl.graph.sample.neg(graph, steps)
+    return worker(x, y, grl.get(name), lr)
+
+
+def encode(graph, dim, steps, lr=.025):
     
     cores = numba.config.NUMBA_NUM_THREADS
-    n = _utils.split_steps(steps, cores)
-    model = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
+    name = np.random.randint(0, 2**63, 1).tobytes().hex()
+    n = grl.graph.embed._utils.split_steps(steps, cores)  # number of steps per core
+    model = grl.randn((grl.vcount(graph)+1, dim), name)  # @indexing
+    
+    with ProcessPoolExecutor(cores) as p:
+        for core in range(cores):
+            p.submit(worker_mp_wrapper, graph, n, name, lr)
+    
+    return grl.get(name)
 
-    for i in numba.prange(cores):
-        
-        x, y = grl.graph.sample.neg(graph, n)
-        
-        for j in range(n):
 
-            xL = model[x[j, 0]]
-            xR = model[x[j, 1]]
-
-            dy = grl.sigmoid(np.sum(xL*xR)) - y[j]
-
-            dxL = xR*dy
-            dxR = xL*dy
-            grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
-            grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
-            
-            cos = grl.cos_decay(j/n)
-            model[x[j, 0]] -= dxL*lr*cos
-            model[x[j, 1]] -= dxR*lr*cos
-            
+@numba.njit()
+def encode_st(graph, dim, steps, lr=.025):
+    """ Single-threaded embedding. 
+        Most efficient on graphs of up to 100 vertices. 
+    """
+    E = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
+    x, y = grl.graph.sample.neg(graph, steps)
+    worker(x, y, E, lr)
     return model
 
 

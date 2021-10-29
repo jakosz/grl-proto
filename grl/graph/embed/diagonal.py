@@ -1,3 +1,5 @@
+from concurrent.futures import ProcessPoolExecutor
+
 import numba
 import numpy as np
 
@@ -5,39 +7,78 @@ import grl
 from . import _utils
 
 
-@numba.njit(fastmath=True, parallel=True)
-def encode(graph, dim, lr, steps):
+@numba.njit(fastmath=True, cache=True)
+def worker(x, y, E, D, lr)
+    n = x.shape[0]
+    for j in range(n):
+        xL = E[x[j, 0]]
+        xR = E[x[j, 1]]
+        # compute gradients
+        dy = grl.sigmoid(np.sum(xL*xR*D)) - y[j]  # output
+        dxLR = D*dy  # embedding product 
+        dD = xL*xR*dy  # diagonal
+        dxL = xR*dxLR  # left vector
+        dxR = xL*dxLR  # right vector
+        grl.clip_1d_inplace(dD, -grl.CLIP, grl.CLIP)
+        grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
+        grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
+        # update parameters
+        cos = grl.cos_decay(j/n)
+        E[x[j, 0]] -= dxL*lr*cos
+        E[x[j, 1]] -= dxR*lr*cos
+        D[:] -= dD*lr*cos
 
-    cores = numba.config.NUMBA_NUM_THREADS
-    n = _utils.split_steps(steps, cores)
-    model = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
-    diag = np.random.randn(dim)
 
-    for i in numba.prange(cores):
+def worker_mp_wrapper(graph, steps, name_E, name_D, lr):
+    x, y = grl.graph.sample.neg(graph, steps)
+    return worker(x, y, grl.get(name_E), grl.get(name_D), lr)
 
-        x, y = grl.graph.sample.neg(graph, n)
 
-        for j in range(n):
+def encode(graph, dim, steps, lr=.025):
+    """ Embed graph nodes in a symmetric matrix with diagonal.
 
-            xL = model[x[j, 0]]
-            xR = model[x[j, 1]]
+        Parameters
+        ----------
+        graph : grl.graph
+            Input graph.
+        dim : int
+            Embedding dimension.
+        steps: int
+            Number of iterations to perform. 
+        lr : float
+            Learning rate, optional, defaults to .025.
+            Note that cosine decay is applied automatically.
 
-            dy = grl.sigmoid(np.sum(xL*xR*diag)) - y[j]
+        Returns
+        -------
+        E, D : 2darray, 1darray
+            Embedding, diagonal. 
+    """
+    n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
+    # generate names for the shared memory object namespace
+    name_E = grl.utils.random_hex()
+    name_D = grl.utils.random_hex()
+    E = grl.randn((grl.vcount(graph)+1, dim), name_E)  # node embedding @indexing
+    D = grl.randn((dim,), name_D)  # diagonal
+    
+    # fit the model 
+    with ProcessPoolExecutor(grl.CORES) as p:
+        for core in range(cores):
+            p.submit(worker_mp_wrapper, graph, n, name_E, name_D, lr)
+    
+    return grl.get(name_E), grl.get(name_D)
 
-            dxLR = diag*dy
-            ddiag = xL*xR*dy
-            dxL = xR*dxLR
-            dxR = xL*dxLR
-            grl.clip_1d_inplace(ddiag, -grl.CLIP, grl.CLIP)
-            grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
-            grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
 
-            cos = grl.cos_decay(j/n)
-            model[x[j, 0]] -= dxL*lr*cos
-            model[x[j, 1]] -= dxR*lr*cos
-            diag[:] -= ddiag*lr*cos
-
-    return model, diag
+@numba.njit()
+def encode_st(graph, dim, steps, lr=.025):
+    """ Single-threaded embedding. 
+        Most efficient on graphs of up to 100 vertices. 
+    """
+    E = np.random.randn(grl.vcount(graph)+1, dim)/dim  # node embedding @indexing
+    D = np.random.randn(dim)  # diagonal
+    x, y = grl.graph.sample.neg(graph, steps)
+    worker(x, y, E, D, lr)
+    return E, D 
 
 
 @numba.njit()
