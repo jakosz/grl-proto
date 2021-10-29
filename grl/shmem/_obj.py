@@ -7,5 +7,3 @@ they need to be present in the global namespace
 and cannot be passed around as function arguments.
 
 """
-
-autoname_counter = 0

@@ -1,19 +1,33 @@
 """ Shared memory handlers. 
 """
 
-import ctypes as _ctypes
-from inspect import getmembers as _getmembers
-from multiprocessing import RawArray as _RawArray
+import ctypes as ctypes
+from inspect import getmembers as getmembers
+from multiprocessing import RawArray as RawArray
 
-import numpy as _np
+import numpy as np
 
 from ..numby import random_randn_fill_inplace
 from . import _obj
 
 
-_ctype = lambda x: _np.ctypeslib.as_ctypes_type(x)
-_size = lambda x: int(_np.prod(x))
-_shared = lambda s, t: _np.frombuffer(_RawArray(_ctype(t), _size(s)), dtype=t).reshape(*s)
+__all__ = [
+    "empty",
+    "empty_like",
+    "get",
+    "load",
+    "ls",
+    "randn",
+    "rm",
+    "set",
+    "zeros",
+    "zeros_like"
+]
+
+
+_ctype = lambda x: np.ctypeslib.asctypes_type(x)
+_size = lambda x: int(np.prod(x))
+_shared = lambda s, t: np.frombuffer(RawArray(_ctype(t), _size(s)), dtype=t).reshape(*s)
 
 
 def empty(shape, dtype, name=None):
@@ -24,7 +38,7 @@ def empty(shape, dtype, name=None):
 
 
 def empty_like(x, name=None):
-    return empty(x.shape, x.dtype, name=name)
+    return empty(x.shape, x.dtype.type, name=name)
 
 
 def get(name):
@@ -34,16 +48,16 @@ def get(name):
 def load(path, name=None):
     """ Load numpy array to shared memory and use path as a name in grl.mem._obj. 
     """
-    set(_np.load(path), name=path if name is None else name)
+    set(np.load(path), name=path if name is None else name)
     return get(path)
 
 
 def ls():
-    return [e[0] for e in _getmembers(_obj) if not e[0].startswith('_')]
+    return [e[0] for e in getmembers(_obj) if not e[0].startswith('_')]
 
 
-def randn(*shape):
-    x = empty(shape, dtype=_np.float32)
+def randn(shape, name):
+    x = empty(shape, dtype=np.float32, name=name)
     random_randn_fill_inplace(x)
     return x
 
