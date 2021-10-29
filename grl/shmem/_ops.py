@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 
-_ctype = lambda x: np.ctypeslib.asctypes_type(x)
+_ctype = lambda x: np.ctypeslib.as_ctypes_type(x)
 _size = lambda x: int(np.prod(x))
 _shared = lambda s, t: np.frombuffer(RawArray(_ctype(t), _size(s)), dtype=t).reshape(*s)
 
