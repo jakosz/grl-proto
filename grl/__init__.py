@@ -1,4 +1,4 @@
-from numba.config import NUMBA_NUM_THREADS
+import numba
 
 from . import graph
 from . import layers
@@ -12,5 +12,5 @@ __version__ = "0.4.20"
 
 # constants
 CLIP = 5.0
-CORES = NUMBA_NUM_THREADS
+CORES = numba.config.NUMBA_NUM_THREADS
 EPSILON = 1e-7
