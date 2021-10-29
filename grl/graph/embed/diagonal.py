@@ -63,7 +63,7 @@ def encode(graph, dim, steps, lr=.025):
     
     # fit the model 
     with ProcessPoolExecutor(grl.CORES) as p:
-        for core in range(cores):
+        for core in range(grl.CORES):
             p.submit(worker_mp_wrapper, graph, n, name_E, name_D, lr)
     
     return grl.get(name_E), grl.get(name_D).ravel()
