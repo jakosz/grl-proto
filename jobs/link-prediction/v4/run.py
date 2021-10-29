@@ -64,4 +64,4 @@ for run in range(args.runs):
                     if args.verbose:
                         print(f"\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
                 except:
-                    log.error(f"Failed to embed {rgm_name} graph using {emb_name} model. vcount={grl.vcount(g)}, ecount={grl.ecount(g)}, dim={dim}")
+                    log.error(f"Failed to embed {rgm_name} graph using {emb_name} model. vcount={grl.vcount(g)}, ecount={grl.ecount(g)}, dim={dim}. Traceback: {traceback.format_exc()")
