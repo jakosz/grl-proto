@@ -3,21 +3,19 @@
 ---
 
 #### TODO
-- [ ] handy embedding evaluation method (with eigen as a reference): encode-decode-evaluate
-- [ ] refactor redundant embed API 
+- [ ] diagonal model is 2x slower than symmetric and asymmetric. it shouldn't be. investigate.  
+- [ ] evaluation for larger graphs should not rely on full adjacency matrix. 
+- [ ] wrap encode-decode-evaluate in one function. do I want to wrap embeddings in an object?
 - [ ] AUC and accuracy computed in numba-jitted functions.
-
-#### BUGS
-- [ ] shallow embedding causes segmentation fault on EC2 machines, but not on Hetzner machines
+- [ ] port graph to shmem.
 
 #### DOCUMENTATION 
-- [ ] Sphinx docstrings & RTD stub. 
+- [ ] Sphinx, docstrings & RTD. 
 - [ ] List reasons to use 1-indexing.
-- [ ] grl vs tf benchmarks
+- [ ] grl vs tf benchmarks.
+- [ ] learning rate & number of steps conditional on graph size/density.
 
 #### OTHER
-- [ ] is what's currently in `jobs` really belong to this repository? 
-- [ ] port graph to shmem 
 - [ ] Global link prediction heuristics. 
 - [ ] Built-in real-world datasets.  
 

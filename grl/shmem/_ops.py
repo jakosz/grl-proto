@@ -41,6 +41,11 @@ def empty_like(x, name=None):
     return empty(x.shape, x.dtype.type, name=name)
 
 
+def flush_shmem():
+    for e in ls():
+        rm(e)
+
+
 def get(name):
     return getattr(_obj, name)
 
