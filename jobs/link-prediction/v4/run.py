@@ -4,7 +4,7 @@ import json
 import time
 import traceback
 
-from grl.utils import JsonNumpy
+from grl.utils import get_stdout_logger, JsonNumpy
 
 from src import *
 
@@ -18,6 +18,8 @@ p.add_argument('--st', action='store_true', help='Use single-threaded implementa
 p.add_argument('--output', type=str, default='link-prediction-v4.json')
 args, _ = p.parse_known_args()
 
+log = get_stdout_logger('link-prediction-v4')
+
 config.vcount = args.vcount
 if args.iter is not None:
     config.iter = args.iter
@@ -30,8 +32,13 @@ for run in range(args.runs):
     for emb_name, emb_model in embs.items():
         for rgm_name, rgm_model in rgms.items():
             for dim in range(2, args.dims):
+                
                 try:
                     g = rgm_model()
+                except:
+                    log.error(f"Failed to sample graph from {rgm_name} model. This is unexpected.") 
+                
+                try:
                     t0 = time.time()
                     auc = emb_model(g, dim)
                     t1 = time.time()
@@ -54,5 +61,4 @@ for run in range(args.runs):
                     times(t1-t0)
                     print(f"\t{times.count:,} models total - {times.value:.04f} sec./run    ", end="\r", flush=True)
                 except:
-                    with open('exceptions.txt', 'a') as f:
-                        f.write(traceback.format_exc() + f"\n\n\n{'-'*80}\n\n\n")
+                    log.error(f"Failed to embed {rgm_name} graph using {emb_name} model. vcount={grl.vcount(g)}, ecount={grl.ecount(g)}, dim={dim}")
