@@ -37,7 +37,9 @@ for run in range(args.runs):
                         'dim': dim,
                         'eigen': eigen(g, dim),
                         'emb': emb_name,
-                        'rgm': rgm_name
+                        'rgm': rgm_name,
+                        'density': grl.density(g),
+                        'vcount': grl.vcount(g)
                     }
 
                     with open(args.output, 'a') as f:
