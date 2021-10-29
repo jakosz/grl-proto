@@ -14,4 +14,8 @@ class JsonNumpy(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def random_hex(n=16):
+    return np.random.randint(0, 2**63, 8).tobytes().hex()[:n]
+
+
 NumpyJson = JsonNumpy  # I don't want to have to remember this
