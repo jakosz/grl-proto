@@ -31,14 +31,12 @@ def worker_mp_wrapper(graph, steps, name, lr):
 
 
 def encode(graph, dim, steps, lr=.025):
-    
-    cores = numba.config.NUMBA_NUM_THREADS
     name = np.random.randint(0, 2**63, 1).tobytes().hex()
-    n = grl.graph.embed._utils.split_steps(steps, cores)  # number of steps per core
+    n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
     model = grl.randn((grl.vcount(graph)+1, dim), name)  # @indexing
     
-    with ProcessPoolExecutor(cores) as p:
-        for core in range(cores):
+    with ProcessPoolExecutor(grl.CORES) as p:
+        for core in range(grl.CORES):
             p.submit(worker_mp_wrapper, graph, n, name, lr)
     
     return grl.get(name)

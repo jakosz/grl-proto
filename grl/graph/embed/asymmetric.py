@@ -31,16 +31,14 @@ def worker_mp_wrapper(graph, steps, name_L, name_R, lr):
 
 
 def encode(graph, dim, steps, lr=.025):
-    
-    cores = numba.config.NUMBA_NUM_THREADS
-    name_L = np.random.randint(0, 2**63, 1).tobytes().hex()
-    name_R = np.random.randint(0, 2**63, 1).tobytes().hex()
-    n = grl.graph.embed._utils.split_steps(steps, cores)  # number of steps per core
+    name_L = grl.utils.random_hex()
+    name_R = grl.utils.random_hex()
+    n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
     L = grl.randn((grl.vcount(graph)+1, dim), name_L)  # @indexing
     R = grl.randn((grl.vcount(graph)+1, dim), name_R)  # @indexing
     
-    with ProcessPoolExecutor(cores) as p:
-        for core in range(cores):
+    with ProcessPoolExecutor(grl.CORES) as p:
+        for core in range(grl.CORES):
             p.submit(worker_mp_wrapper, graph, n, name_L, name_R, lr)
     
     return grl.get(name_L), grl.get(name_R)
@@ -55,7 +53,7 @@ def encode_st(graph, dim, steps, lr=.025):
     R = np.random.randn(grl.vcount(graph)+1, dim)/dim  # @indexing
     x, y = grl.graph.sample.neg(graph, steps)
     worker(x, y, L, R, lr)
-    return model
+    return L, R 
 
 
 @numba.njit()
