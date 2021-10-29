@@ -1,7 +1,8 @@
 import numba
 import numpy as np
 
-from grl import EPSILON
+
+EPSILON = 1e-7
 
 
 @numba.njit(fastmath=True)
