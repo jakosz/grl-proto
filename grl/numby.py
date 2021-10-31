@@ -35,6 +35,14 @@ def cos_decay(p):
     return (0.5 * (1 + np.cos(np.pi * p)))
 
 
+@numba.njit(cache=True)
+def isin_1d(a, b):
+    for e in b:
+        if e == a:
+            return True
+    return False
+
+
 @numba.njit(cache=True, )
 def random_choice(x, s, w):
     """ Weighted choice with replacement.
