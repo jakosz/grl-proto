@@ -12,7 +12,7 @@ Times:
 * 839m8.469s
 * 821m29.802s
 
-### 100-node: 
+### --vcount 100: 
 ```bash
 time seq 1 16 | parallel --ungroup python3 run.py --runs 100 --dims 21 --vcount 100 --iter $((2**23)) --st --output link-prediction-v4-100.json >> error.log
 ```
