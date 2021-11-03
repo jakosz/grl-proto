@@ -22,6 +22,14 @@ def test_clip_1d(random_normal_2d):
         assert np.min(x) >= -1
 
 
+def test_cumsum_2d(random_normal_2d):
+    x = random_normal_2d()
+    for axis in [0, 1]:
+        numby = grl.cumsum_2d(x, axis=axis)
+        numpy = np.cumsum(x, axis=axis)
+        assert np.all(numby == numpy)
+
+
 def test_sigmoid(random_normal_2d):
     x = random_normal_2d()
     res_tf = tf.nn.sigmoid(x).numpy().ravel()

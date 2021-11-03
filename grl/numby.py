@@ -36,6 +36,19 @@ def cos_decay(p):
 
 
 @numba.njit(cache=True)
+def cumsum_2d(x, axis):
+    res = np.empty_like(x)
+    if axis == 0:
+        for j in range(x.shape[1]):
+            res[:, j] = np.cumsum(x[:, j])
+        return res
+    elif axis == 1:
+        for i in range(x.shape[0]):
+            res[i, :] = np.cumsum(x[i, :])
+        return res
+
+
+@numba.njit(cache=True)
 def isin_1d(a, b):
     for e in b:
         if e == a:
