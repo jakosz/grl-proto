@@ -58,9 +58,13 @@ def from_adjacency(A):
     return nodes, edges
 
 
+def from_edgelist():
+    pass
+
+
 def from_igraph(g):
     """ Convert igraph.Graph to grl graph representation.
-        Note: currently it assumes a symmetric graph to be passed. 
+        Note: currently it assumes that graph is symmetric. 
     """
     nodes = np.zeros((g.vcount()+2,), dtype=np.uint64)
     edges = np.zeros((g.ecount()*2,), dtype=np.uint32)
@@ -115,19 +119,19 @@ def to_adjacency(graph):
     n = core.vcount(graph)
     A = np.zeros((n, n), dtype=np.uint8)
     for i in numba.prange(n):
-        for j in core.neighbours(i+1, graph):
+        for j in core.neighbours(i+1, graph):  # @indexing
             if j:
-                A[i, j-1] = 1
+                A[i, j-1] = 1  # @indexing
     return A
 
 
 def to_igraph(g):
+    """ Convert grl graph to igraph.Graph
+    """
     n = core.vcount(g)
+    e = enumerate_edges(g)-1  # @indexing
     Graph = igraph.Graph(n)
-    for src in range(n):
-        for dst in core.neighbours(src+1, g):
-            if dst > src:
-                Graph.add_edge(src, dst-1)
+    Graph.add_edges(e[e[:, 0] < e[:, 1]])
     return Graph
 
 
