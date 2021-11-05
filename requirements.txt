@@ -1,10 +1,10 @@
 colorama==0.4.4
-numba==0.53.1
+numba==0.54.1
 matplotlib==3.4.2
 numpy
 pytest==6.1.1
-python-igraph==0.9.7
+python-igraph==0.9.8
 ray
-scipy==1.7.0
-scikit-learn==0.24.2
-tensorflow==2.6.0
+scipy==1.7.1
+scikit-learn==1.0.1
+tensorflow==2.7.0
