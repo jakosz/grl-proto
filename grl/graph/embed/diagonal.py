@@ -1,3 +1,11 @@
+""" This module implements embedding graph nodes in a symmetric matrix and a diagonal:
+
+$$ A \approx XDX^{\top} $$
+
+where A is the adjacency matrix, X is the embedding, and D is the diagonal.  
+
+"""
+
 from concurrent.futures import ProcessPoolExecutor
 
 import numba
@@ -10,11 +18,11 @@ from . import _utils
 @numba.njit(fastmath=True, cache=True)
 def worker(x, y, E, D, lr):
     n = x.shape[0]
-    for j in range(n):
-        xL = E[x[j, 0]]
-        xR = E[x[j, 1]]
+    for i in range(n):
+        xL = E[x[i, 0]]
+        xR = E[x[i, 1]]
         # compute gradients
-        dy = grl.sigmoid(np.sum(xL*xR*D)) - y[j]  # output
+        dy = grl.sigmoid(np.sum(xL*xR*D)) - y[i]  # output
         dxLR = D*dy  # embedding product 
         dD = xL*xR*dy  # diagonal
         dxL = xR*dxLR  # left vector
@@ -23,9 +31,9 @@ def worker(x, y, E, D, lr):
         grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
         grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
         # update parameters
-        cos = grl.cos_decay(j/n)
-        E[x[j, 0]] -= dxL*lr*cos
-        E[x[j, 1]] -= dxR*lr*cos
+        cos = grl.cos_decay(i/n)
+        E[x[i, 0]] -= dxL*lr*cos
+        E[x[i, 1]] -= dxR*lr*cos
         D[:] -= dD*lr*cos
 
 
