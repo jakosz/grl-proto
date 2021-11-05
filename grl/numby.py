@@ -49,6 +49,11 @@ def cumsum_2d(x, axis):
 
 
 @numba.njit(cache=True)
+def identity(x):
+    return x
+
+
+@numba.njit(cache=True)
 def isin_1d(a, b):
     for e in b:
         if e == a:
