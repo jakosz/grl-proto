@@ -33,7 +33,7 @@ def test_cumsum_2d(random_normal_2d):
 def test_hstack2(random_normal_2d, random_binomial_2d):
     x = random_normal_2d()
     y = random_binomial_2d()
-    assert np.all(np.hstack([x, y]) == hstack2(x, y))
+    assert np.all(np.hstack([x, y]) == grl.hstack2(x, y))
 
 
 def test_reduce_max_2d(random_normal_2d):
@@ -81,7 +81,7 @@ def test_softmax(random_normal_2d):
 def test_vstack2(random_normal_2d, random_binomial_2d):
     x = random_normal_2d()
     y = random_binomial_2d()
-    assert np.all(np.vstack([x, y]) == vstack2(x, y))
+    assert np.all(np.vstack([x, y]) == grl.vstack2(x, y))
 
 
 def test_where_1d(random_normal_2d):
