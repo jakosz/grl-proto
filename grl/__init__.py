@@ -8,7 +8,7 @@ from .graph.core import *
 from .numby import *
 from .shmem import *
 
-__version__ = "0.5.2"
+__version__ = "0.5.3"
 
 # constants
 CLIP = 5.0
