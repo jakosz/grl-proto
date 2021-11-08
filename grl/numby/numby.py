@@ -49,11 +49,6 @@ def cumsum_2d(x, axis):
 
 
 @numba.njit(cache=True)
-def identity(x):
-    return x
-
-
-@numba.njit(cache=True)
 def isin_1d(a, b):
     for e in b:
         if e == a:
@@ -89,4 +84,30 @@ def sigmoid(x):
 
 @numba.njit(cache=True, fastmath=True)
 def softmax(x):
-    return np.exp(x)/np.sum(np.exp(x))
+    return np.exp(x)/np.sum(np.exp(x)).njit()
+
+
+@numba.njit(cache=True)
+def where_1d(x):
+    res = np.empty(x.shape[0], dtype=np.int64)
+    cnt = 0
+    for i in range(x.shape[0]):
+        if x[i]:
+            res[cnt] = i
+            cnt += 1
+    return res[:cnt]
+
+
+@numba.njit(cache=True)
+def where_2d(x):
+    dim = x.shape[0]*x.shape[1]
+    res_i = np.empty(dim, dtype=np.int64)
+    res_j = np.empty(dim, dtype=np.int64)
+    cnt = 0
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            if x[i, j]:
+                res_i[cnt] = i
+                res_j[cnt] = j
+                cnt += 1
+    return res_i[:cnt], res_j[:cnt]
