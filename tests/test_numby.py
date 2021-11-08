@@ -30,10 +30,17 @@ def test_cumsum_2d(random_normal_2d):
         assert np.all(numby == numpy)
 
 
+def test_hstack2(random_normal_2d, random_binomial_2d):
+    x = random_normal_2d()
+    y = random_binomial_2d()
+    assert np.all(np.hstack([x, y]) == hstack2(x, y))
+
+
 def test_reduce_max_2d(random_normal_2d):
     x = random_normal_2d()
     assert np.all(x.max(0) == grl.max0(x))
     assert np.all(x.max(1) == grl.max1(x))
+
 
 def test_reduce_mean_2d(random_normal_2d):
     x = random_normal_2d()
@@ -69,6 +76,12 @@ def test_sigmoid(random_normal_2d):
 def test_softmax(random_normal_2d):
     for e in random_normal_2d():
         assert np.allclose(tf.nn.softmax(e).numpy(), grl.softmax(e))
+
+
+def test_vstack2(random_normal_2d, random_binomial_2d):
+    x = random_normal_2d()
+    y = random_binomial_2d()
+    assert np.all(np.vstack([x, y]) == vstack2(x, y))
 
 
 def test_where_1d(random_normal_2d):

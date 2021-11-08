@@ -56,6 +56,16 @@ def isin_1d(a, b):
     return False
 
 
+@numba.njit()
+def hstack2(x, y):
+    """ Stack two arrays horizontally. 
+    """    
+    res = np.empty((x.shape[0], x.shape[1]+y.shape[1]), dtype=x.dtype.type)
+    res[:, :x.shape[1]] = x
+    res[:, x.shape[1]:] = y
+    return res
+
+
 @numba.njit(cache=True, )
 def random_choice(x, s, w):
     """ Weighted choice with replacement.
@@ -84,7 +94,17 @@ def sigmoid(x):
 
 @numba.njit(cache=True, fastmath=True)
 def softmax(x):
-    return np.exp(x)/np.sum(np.exp(x)).njit()
+    return np.exp(x)/np.sum(np.exp(x))
+
+
+@numba.njit()
+def vstack2(x, y):
+    """ Stack two arrays vertically. 
+    """
+    res = np.empty((x.shape[0]+y.shape[0], x.shape[1]), dtype=x.dtype.type)
+    res[:x.shape[0]] = x
+    res[x.shape[0]:] = y
+    return res
 
 
 @numba.njit(cache=True)
