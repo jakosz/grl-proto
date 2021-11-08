@@ -40,3 +40,21 @@ def test_sigmoid(random_normal_2d):
 def test_softmax(random_normal_2d):
     for e in random_normal_2d():
         assert np.allclose(tf.nn.softmax(e).numpy(), grl.softmax(e))
+
+
+def test_where_1d(random_normal_2d):
+    x = random_normal_2d().ravel()
+    for t in np.linspace(-3, 3, 7):
+	res_np = np.where(x < t) 
+	res_grl = where_1d(x < t)
+	assert np.all(res_np[0] == res_grl[0])
+	assert np.all(res_np[1] == res_grl[1])
+
+
+def test_where_2d(random_normal_2d):
+    x = random_normal_2d()
+    for t in np.linspace(-3, 3, 7):
+	res_np = np.where(x < t) 
+	res_grl = where_2d(x < t)
+	assert np.all(res_np[0] == res_grl[0])
+	assert np.all(res_np[1] == res_grl[1])
