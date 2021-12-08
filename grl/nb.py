@@ -1,6 +1,6 @@
 """ Common imports for Jupyter notebook session.  
 """
-
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import matplotlib.pyplot as plt
@@ -14,7 +14,9 @@ from tensorflow.keras.layers import *
 import grl
 
 
-inform_user = """from concurrent.futures import ThreadPoolExecutor
+inform_user = """import time
+from concurrent.futures import ThreadPoolExecutor
+
 import matplotlib.pyplot as plt
 import numba
 import numpy as np
@@ -30,9 +32,9 @@ print(inform_user)
 def background(f):
     def wrap():
         class BackgroundTask:
-            def __init__(self, f):
+            def __init__(self, f, tick=1):
                 self._stop = False
-                self._tick = 1
+                self._tick = tick 
                 self.results = []
                 self.f = f
             
