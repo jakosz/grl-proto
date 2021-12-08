@@ -1,6 +1,8 @@
 """ Common imports for Jupyter notebook session.  
 """
 
+from concurrent.futures import ThreadPoolExecutor
+
 import matplotlib.pyplot as plt
 import numba
 import numpy as np
@@ -12,7 +14,8 @@ from tensorflow.keras.layers import *
 import grl
 
 
-inform_user = """import matplotlib.pyplot as plt
+inform_user = """from concurrent.futures import ThreadPoolExecutor
+import matplotlib.pyplot as plt
 import numba
 import numpy as np
 import ray
@@ -22,3 +25,30 @@ from tensorflow.keras.layers import *
 
 import grl"""
 print(inform_user)
+
+
+def background(f):
+    def wrap():
+        class BackgroundTask:
+            def __init__(self, f):
+                self._stop = False
+                self._tick = 1
+                self.results = []
+                self.f = f
+            
+            def run(self):
+                while not self._stop:
+                    self.results.append(self.f())
+                    time.sleep(self._tick)
+            
+            def start(self, tick=1):
+                self._stop = False
+                self._tick = tick
+                self.pool = ThreadPoolExecutor(1)
+                self.future = self.pool.submit(self.run)
+                
+            def stop(self):
+                self._stop = True
+                self.pool.shutdown(wait=False)
+        return BackgroundTask(f)
+    return wrap
