@@ -1,5 +1,6 @@
 Scaling:
 - [ ] Evaluation on graphs too large to build adjacency matrix.
+- [ ] Online evaluation + checkpointing for training larger graphs. 
 
 Embedding methods:
 - [ ] Orthogonalization of simple embeddings. 
