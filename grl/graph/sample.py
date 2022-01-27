@@ -26,7 +26,7 @@ def get_random_edge(graph):
 @numba.njit(cache=True)
 def get_random_pair(graph):
     """ Sample a random pair of nodes. """
-    return np.random.choice(utils.enumerate_nodes(graph), 2).astype(graph[1].dtype)
+    return np.random.choice(core.vcount(graph), 2).astype(graph[1].dtype)+1  # @indexing
 
 
 @numba.njit(cache=True)
