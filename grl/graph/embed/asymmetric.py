@@ -25,12 +25,12 @@ def worker(x, y, L, R, lr):
         R[x[j, 1]] -= dxR*lr*cos
 
 
-def worker_mp_wrapper(graph, steps, name_L, name_R, lr):
-    x, y = grl.graph.sample.neg(graph, steps)
+def worker_mp_wrapper(graph, steps, name_L, name_R, lr, sampler):
+    x, y = sampler(graph, steps)
     return worker(x, y, grl.get(name_L), grl.get(name_R), lr)
 
 
-def encode(graph, dim, steps, lr=.025):
+def encode(graph, dim, steps, lr=.025, sampler=grl.graph.sample.neg):
     name_L = grl.utils.random_hex()
     name_R = grl.utils.random_hex()
     n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
@@ -39,7 +39,7 @@ def encode(graph, dim, steps, lr=.025):
     
     with ProcessPoolExecutor(grl.CORES) as p:
         for core in range(grl.CORES):
-            p.submit(worker_mp_wrapper, graph, n, name_L, name_R, lr)
+            p.submit(worker_mp_wrapper, graph, n, name_L, name_R, lr, sampler)
     
     return grl.get(name_L), grl.get(name_R)
 
