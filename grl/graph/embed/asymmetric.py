@@ -8,7 +8,7 @@ from . import _utils
 from .. import sample
 
 
-@numba.njit(fastmath=True, cache=True)
+@numba.njit(cache=True)
 def worker(x, y, L, R, lr):
     n = x.shape[0]
     for j in range(n):

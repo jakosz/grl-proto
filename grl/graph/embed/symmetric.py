@@ -7,7 +7,7 @@ import grl
 from . import _utils 
 
 
-@numba.njit(fastmath=True, cache=True)
+@numba.njit(cache=True)
 def worker(x, y, E, lr):
     n = x.shape[0]    
     for i in range(n):

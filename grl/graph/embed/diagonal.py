@@ -1,6 +1,6 @@
 """ This module implements embedding graph nodes in a symmetric matrix and a diagonal:
 
-$$ A \approx XDX^{\top} $$
+$$ A \approx \sigma(XDX^{\top}) $$
 
 where A is the adjacency matrix, X is the embedding, and D is the diagonal.  
 
@@ -15,14 +15,22 @@ import grl
 from . import _utils
 
 
-@numba.njit(fastmath=True, cache=True)
-def worker(x, y, E, D, lr):
+@numba.njit(cache=True)
+def worker(x, y, E, D, lr, loss):
+    
+    if loss == 'logistic':
+        f = grl.sigmoid
+    elif loss == 'mse':
+        f = grl.identity
+    else:
+        return 1
+    
     n = x.shape[0]
     for i in range(n):
         xL = E[x[i, 0]]
         xR = E[x[i, 1]]
         # compute gradients
-        dy = grl.sigmoid(np.sum(xL*xR*D)) - y[i]  # output
+        dy = f(np.sum(xL*xR*D)) - y[i]  # output
         dxLR = D*dy  # embedding product 
         dD = xL*xR*dy  # diagonal
         dxL = xR*dxLR  # left vector
@@ -35,14 +43,15 @@ def worker(x, y, E, D, lr):
         E[x[i, 0]] -= dxL*lr*cos
         E[x[i, 1]] -= dxR*lr*cos
         D[:] -= dD*lr*cos
+    return 0
 
 
-def worker_mp_wrapper(graph, steps, name_E, name_D, lr):
+def worker_mp_wrapper(graph, steps, name_E, name_D, lr, loss):
     x, y = grl.graph.sample.neg(graph, steps)
-    return worker(x, y, grl.get(name_E), grl.get(name_D), lr)
+    return worker(x, y, grl.get(name_E), grl.get(name_D), lr, loss)
 
 
-def encode(graph, dim, steps, lr=.025):
+def encode(graph, dim, steps, lr=.025, loss='logistic'):
     """ Embed graph nodes in a symmetric matrix with diagonal.
 
         Parameters
@@ -54,8 +63,11 @@ def encode(graph, dim, steps, lr=.025):
         steps: int
             Number of iterations to perform. 
         lr : float
-            Learning rate, optional, defaults to .025.
+            Learning rate. 
             Note that cosine decay is applied automatically.
+        loss : str
+            Loss function to optimize. 
+            Supported values are 'logistic' and 'mse'. 
 
         Returns
         -------
@@ -73,20 +85,20 @@ def encode(graph, dim, steps, lr=.025):
     # fit the model 
     with ProcessPoolExecutor(grl.CORES) as p:
         for core in range(grl.CORES):
-            p.submit(worker_mp_wrapper, graph, n, name_E, name_D, lr)
+            p.submit(worker_mp_wrapper, graph, n, name_E, name_D, lr, loss)
     
     return grl.get(name_E), grl.get(name_D).ravel()
 
 
 @numba.njit(cache=True)
-def encode_st(graph, dim, steps, lr=.025):
+def encode_st(graph, dim, steps, lr=.025, loss='logistic'):
     """ Single-threaded embedding. 
         Most efficient on graphs of up to 100 vertices. 
     """
     E = np.random.randn(grl.vcount(graph)+1, dim)/dim  # node embedding @indexing
     D = np.random.randn(dim)  # diagonal
     x, y = grl.graph.sample.neg(graph, steps)
-    worker(x, y, E, D, lr)
+    worker(x, y, E, D, lr, loss)
     return E, D 
 
 
