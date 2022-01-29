@@ -21,28 +21,37 @@ def worker(x, y, L, R, lr):
         grl.clip_1d_inplace(dxL, -grl.CLIP, grl.CLIP)
         grl.clip_1d_inplace(dxR, -grl.CLIP, grl.CLIP)
         # update embedding
-        cos = grl.cos_decay(j/n) 
-        L[x[j, 0]] -= dxL*lr*cos
-        R[x[j, 1]] -= dxR*lr*cos
+        L[x[j, 0]] -= dxL*lr
+        R[x[j, 1]] -= dxR*lr
 
 
-def worker_mp_wrapper(graph, steps, name_L, name_R, lr, sampler):
-    x, y = sampler(graph, steps)
-    return worker(x, y, grl.get(name_L), grl.get(name_R), lr)
+def worker_mp_wrapper(graph, steps, name_L, name_R, lr, sampler, part_size):
+    parts = steps//part_size
+    for i in range(parts):
+        x, y = sampler(graph, part_size)
+        clr = grl.cos_decay(i/parts)*lr
+        worker(x, y, grl.get(name_L), grl.get(name_R), clr)
 
 
-def encode(graph, dim, steps, lr=.025, sampler=sample.neg):
+def encode(graph, 
+           dim, 
+           steps, 
+           lr=.025, 
+           sampler=sample.neg, 
+           part_size=1024):
+    assert not part_size % 2, "part_size must be even"
     name_L = grl.utils.random_hex()
     name_R = grl.utils.random_hex()
-    n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
+    n = _utils.split_steps(steps, grl.CORES)  # number of steps per core
     L = grl.randn((grl.vcount(graph)+1, dim), name_L)  # @indexing
     R = grl.randn((grl.vcount(graph)+1, dim), name_R)  # @indexing
     
     with ProcessPoolExecutor(grl.CORES) as p:
         for core in range(grl.CORES):
-            p.submit(worker_mp_wrapper, graph, n, name_L, name_R, lr, sampler)
+            p.submit(worker_mp_wrapper, graph, n, name_L, name_R, lr, sampler, part_size)
     
     return grl.get(name_L), grl.get(name_R)
+
 
 
 @numba.njit(cache=True)
