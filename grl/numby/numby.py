@@ -5,12 +5,12 @@ import numpy as np
 EPSILON = 1e-7
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
 def binary_crossentropy(p, q):
     return -np.mean(p*np.log(q+EPSILON) + (1-p)*np.log(1-q+EPSILON))
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
 def clip_1d(x, lower, upper):
     x = x.copy()
     for i in range(x.shape[0]):
@@ -21,7 +21,7 @@ def clip_1d(x, lower, upper):
     return x
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
 def clip_1d_inplace(x, lower, upper):
     for i in range(x.shape[0]):
         if x[i] < lower:
@@ -30,7 +30,7 @@ def clip_1d_inplace(x, lower, upper):
             x[i] = upper
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
 def cos_decay(p):
     return (0.5 * (1 + np.cos(np.pi * p)))
 
@@ -66,7 +66,7 @@ def hstack2(x, y):
     return res
 
 
-@numba.njit(cache=True, )
+@numba.njit(cache=True)
 def random_choice(x, s, w):
     """ Weighted choice with replacement.
     """
@@ -79,7 +79,7 @@ def random_choice(x, s, w):
     return np.random.choice(expand, s)
 
 
-@numba.njit(cache=True, fastmath=True, parallel=True)
+@numba.njit(cache=True, parallel=True)
 def random_randn_fill_inplace(x):
     """ Fill an array with gaussian noise scaled down by its dimension. 
     """
@@ -87,12 +87,48 @@ def random_randn_fill_inplace(x):
         x[i] = np.random.randn(x.shape[1])/x.shape[1]
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
+def _round_1d(x):
+    x = x.copy()
+    for i in range(x.shape[0]):
+        x[i] = np.round(x[i])
+    return x
+
+
+@numba.njit(cache=True)
+def _round_2d(x):
+    x = x.copy()
+    for i in range(x.shape[0]):
+        x[i] = _round_1d(x[i])
+    return x
+
+
+@numba.njit(cache=True)
+def _round_3d(x):
+    x = x.copy()
+    for i in range(x.shape[0]):
+        x[i] = _round_2d(x[i])
+    return x
+
+
+@numba.njit(cache=True)
+def round(x):
+    if x.ndim == 1:
+        return _round_1d(x)
+    elif x.ndim == 2:
+        return _round_2d(x)
+    elif x.ndim == 3:
+        return _round_3d(x)
+    else:
+        raise NotImplementedError("Arrays with dim > 3 not supported.") 
+
+
+@numba.njit(cache=True)
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
 
-@numba.njit(cache=True, fastmath=True)
+@numba.njit(cache=True)
 def softmax(x):
     return np.exp(x)/np.sum(np.exp(x))
 

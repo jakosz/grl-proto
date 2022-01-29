@@ -3,7 +3,7 @@ import tensorflow as tf
 
 import grl
 
-from common import random_binomial_2d, random_normal_2d
+from common import random_binomial_2d, random_normal_2d, random_normal_3d
 
 
 def test_binary_crossentropy(random_normal_2d, random_binomial_2d):
@@ -65,6 +65,11 @@ def test_reduce_sum_2d(random_normal_2d):
     assert np.allclose(x.sum(0), grl.sum0(x))
     assert np.allclose(x.sum(1), grl.sum1(x))
     
+
+def test_round(random_normal_3d):
+    x = random_normal_3d()
+    assert np.all(np.round(x) == grl.round(x))
+
 
 def test_sigmoid(random_normal_2d):
     x = random_normal_2d()

@@ -7,5 +7,6 @@ At the moment it mostly boils down to replicating some of the Numpy and Tensorfl
 
 """
 
+from .bits import *
 from .numby import *
 from .reduce import *

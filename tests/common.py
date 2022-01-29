@@ -70,9 +70,29 @@ def random_binomial_2d():
 
 
 @pytest.fixture(scope="module")
+def random_normal_1d():
+
+    def wrap(shape=(32), seed=13):
+        np.random.seed(seed)
+        return np.random.randn(*shape)
+
+    return wrap
+
+
+@pytest.fixture(scope="module")
 def random_normal_2d():
 
     def wrap(shape=(32, 32), seed=13):
+        np.random.seed(seed)
+        return np.random.randn(*shape)
+
+    return wrap
+
+
+@pytest.fixture(scope="module")
+def random_normal_3d():
+
+    def wrap(shape=(32, 32, 32), seed=13):
         np.random.seed(seed)
         return np.random.randn(*shape)
 
