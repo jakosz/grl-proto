@@ -5,6 +5,7 @@ import numpy as np
 
 import grl
 from . import _utils 
+from .. import sample
 
 
 @numba.njit(fastmath=True, cache=True)
@@ -30,7 +31,7 @@ def worker_mp_wrapper(graph, steps, name_L, name_R, lr, sampler):
     return worker(x, y, grl.get(name_L), grl.get(name_R), lr)
 
 
-def encode(graph, dim, steps, lr=.025, sampler=grl.graph.sample.neg):
+def encode(graph, dim, steps, lr=.025, sampler=sample.neg):
     name_L = grl.utils.random_hex()
     name_R = grl.utils.random_hex()
     n = grl.graph.embed._utils.split_steps(steps, grl.CORES)  # number of steps per core
