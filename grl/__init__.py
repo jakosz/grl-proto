@@ -2,10 +2,10 @@ import numba
 
 from . import graph
 from . import layers
+from . import metrics
 from . import models
 from . import utils
 from .graph.core import *
-from .metrics import *
 from .numby import *
 from .shmem import *
 
