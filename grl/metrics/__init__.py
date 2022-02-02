@@ -1,6 +1,8 @@
 import numba
 import numpy as np
 
+from ..graph.sample import *
+from ..numby import *
 
 @numba.njit()
 def accuracy(g, L, R=None):
@@ -15,7 +17,7 @@ def accuracy(g, L, R=None):
 def accuracy_asymmetric(g, L, R):
     acc = np.empty(32, dtype=np.float32)
     for i in numba.prange(32):
-        x, y = grl.graph.sample.nce(g, 8192)
-        yhat = grl.sigmoid(grl.sum1(L[x[:, 0]]*R[x[:, 1]])).astype(np.float32)
-        acc[i] = (grl.round(yhat) == y).mean()
+        x, y = graph.sample.nce(g, 8192)
+        yhat = sigmoid(numby.sum1(L[x[:, 0]]*R[x[:, 1]])).astype(np.float32)
+        acc[i] = (numby.round(yhat) == y).mean()
     return np.mean(acc)
