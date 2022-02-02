@@ -1,8 +1,9 @@
 import numba
 import numpy as np
 
-from ..graph import *
-from ..numby import *
+from .. import graph
+from .. import numby
+
 
 @numba.njit()
 def accuracy(g, L, R=None):
