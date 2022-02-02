@@ -1,7 +1,7 @@
 import numba
 import numpy as np
 
-from ..graph.sample import *
+from ..graph import *
 from ..numby import *
 
 @numba.njit()
