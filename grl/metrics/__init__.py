@@ -2,7 +2,7 @@ import numba
 import numpy as np
 
 from .. import graph
-from .. import numby
+from ..numby import *
 
 
 @numba.njit()
