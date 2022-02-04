@@ -28,7 +28,7 @@ class TransformerBlock(Layer):
         self.dropout1 = Dropout(dropout)
 
     def call(self, x, training, mask=None):
-        attn_output, _ = self.mha(x, x, x, mask)
+        attn_output = self.mha(x, x, x, mask)
         attn_output = self.dropout0(attn_output, training=training)
         out0 = self.n0(x + attn_output)
 
