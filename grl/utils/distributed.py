@@ -32,7 +32,9 @@ def receiver(arr, host, port=5555):
     @utils.background(tick=0)
     @ipc.pull(sock)
     def _receiver(data, arr):
-        arr[data['key']] = data['value']
+        t0 = arr[data['key']].copy()
+        t1 = (t0+data['value'])/2
+        arr[data['key']] = t1
     return _receiver(arr)
 
 
