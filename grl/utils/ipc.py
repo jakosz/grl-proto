@@ -1,3 +1,4 @@
+import pickle
 import zmq
 
 
@@ -18,7 +19,7 @@ def socket_push(port=5555):
 def push(sock):
     def wrap(f):
         def wrap(*args, **kwargs):
-            sock.send(f(*args, **kwargs))
+            sock.send(pickle.dumps(f(*args, **kwargs)))
         return wrap
     return wrap
 
@@ -45,6 +46,6 @@ def pull(sock):
     """
     def wrap(f):
         def wrap(*args, **kwargs):
-            f(sock.recv(), *args, **kwargs)
+            f(pickle.loads(sock.recv()), *args, **kwargs)
         return wrap
     return wrap
