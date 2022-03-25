@@ -8,3 +8,4 @@ ray
 scipy==1.7.1
 scikit-learn==1.0.1
 tensorflow==2.7.0
+zmq
