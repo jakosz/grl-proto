@@ -9,10 +9,10 @@ class MirroredArray:
         self.arr = arr
         self.hosts = hosts
         self.port = port
-        self.sender = sender(self.arr, sample_size).start()
+        self.sender = sender(self.arr, sample_size, port).start()
         self.receivers = []
         for host in hosts:
-            self.receivers.append(receiver(self.arr, host).start())
+            self.receivers.append(receiver(self.arr, host, port).start())
     
     def __getattr__(self, *args, **kwargs):
         return getattr(self.arr, *args, **kwargs)
