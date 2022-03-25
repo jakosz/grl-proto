@@ -1,6 +1,7 @@
 import numpy as np
 
-from .utils import *
+from . import utils
+from . import ipc 
 
 
 class MirroredArray:
@@ -28,8 +29,8 @@ class MirroredArray:
 
 def receiver(arr, host, port=5555):
     ctx, sock = socket_pull(host, port)
-    @background()
-    @pull(sock)
+    @utils.background()
+    @ipc.pull(sock)
     def _receiver(data, arr):
         arr[data['key']] = data['value']
     return _receiver(arr)
@@ -37,8 +38,8 @@ def receiver(arr, host, port=5555):
 
 def sender(arr, sample_size, port=5555):
     ctx, sock = socket_push(port)
-    @background()
-    @push(sock)
+    @utils.background()
+    @ipc.push(sock)
     def _sender(arr, sample_size):
         i = np.random.choice(arr.shape[0], sample_size)
         return {'key': i, 'value': arr[i]}
