@@ -2,14 +2,14 @@ import pickle
 import zmq
 
 
-def socket_push(host="localhost", port=5555):
+def socket_pull(host="localhost", port=5555):
     ctx = zmq.Context()
     sock = ctx.socket(zmq.REQ)
     sock.connect(f"tcp://{host}:{port}")
     return ctx, sock
 
 
-def socket_pull(port=5555):
+def socket_push(port=5555):
     ctx = zmq.Context()
     sock = ctx.socket(zmq.REP)
     sock.bind(f"tcp://*:{port}")
