@@ -38,11 +38,11 @@ def receiver(arr, host, port=5555, tick=0):
     return _receiver(arr)
 
 
-def sender(arr, sample, port=5555, tick=0):
+def sender(arr, sample_size, port=5555, tick=0):
     ctx, sock = ipc.socket_push(port)
     @utils.background(tick=tick)
     @ipc.push(sock)
-    def _sender(arr):
-        #i = np.random.choice(arr.shape[0], sample_size)
-        return {'key': sample, 'value': arr[sample]}
-    return _sender(arr)
+    def _sender(arr, sample_size):
+        i = np.random.choice(arr.shape[0], sample_size)
+        return {'key': i, 'value': arr[i]}
+    return _sender(arr, sample_size)
