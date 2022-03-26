@@ -27,8 +27,8 @@ class MirroredArray:
         self.arr[i] = v
 
 
-def receiver(arr, host, port=5555, tick=0):
-    ctx, sock = ipc.socket_req(host, port)
+def receiver(arr, port=5555, tick=0):
+    ctx, sock = ipc.socket_rep(port)
     @utils.background(tick=tick)
     @ipc.pull(sock)
     def _receiver(data, arr):
@@ -38,8 +38,8 @@ def receiver(arr, host, port=5555, tick=0):
     return _receiver(arr)
 
 
-def sender(arr, sample_size, port=5555, tick=0):
-    ctx, sock = ipc.socket_rep(port)
+def sender(arr, sample_size, host, port=5555, tick=0):
+    ctx, sock = ipc.socket_req(host, port)
     @utils.background(tick=tick)
     @ipc.push(sock)
     def _sender(arr, sample_size):
