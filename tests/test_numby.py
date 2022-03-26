@@ -36,6 +36,22 @@ def test_hstack2(random_normal_2d, random_binomial_2d):
     assert np.all(np.hstack([x, y]) == grl.hstack2(x, y))
 
 
+def test_random_choice():
+    # prepare the data
+    x = np.random.randint(0, 128, 1024)  # data
+    cx = np.bincount(x)  # counts
+    px = cx/cx.sum()  # probs
+    # flip probs of x - we will assert high negative correlation
+    w = -px + px.max() + px.min()        
+    w = (w*x.size).astype(np.uint64)
+    # draw a large sample
+    s = random_choice(np.arange(128), 2**20, w)  
+    cs = np.bincount(s)  # counts
+    ps = cs/cs.sum()  # probs
+    # test
+    assert np.corrcoef(px, ps)[0, 1] < -.999
+
+
 def test_reduce_max_2d(random_normal_2d):
     x = random_normal_2d()
     assert np.all(x.max(0) == grl.max0(x))

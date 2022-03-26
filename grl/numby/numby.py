@@ -56,7 +56,7 @@ def isin_1d(a, b):
     return False
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def hstack2(x, y):
     """ Stack two arrays horizontally. 
     """    
@@ -67,12 +67,30 @@ def hstack2(x, y):
 
 
 @numba.njit(cache=True)
-def random_choice(x, s, w):
-    """ Weighted choice with replacement.
+def random_choice(x, s, w=None): 
+    """ Weighted sample with replacement.
+    
+        Parameters
+        ----------
+        x : 1-D array-like
+            Data to draw a sample from. 
+        s : int
+            Sample size.
+        w : 1-D array-like, optional
+            Sampling weights, corresponding to the values of x. 
+            
+        Returns
+        -------
+        res : 1darray
+            
     """
+    if w is None:
+        return np.random.choice(x, s)
+    
     assert x.size == w.size
     expand = np.empty(w.sum(), dtype=x.dtype.type)
-    _ = 0
+    
+    _ = 0 
     for i in range(w.size):
         expand[_:_+w[i]] = np.repeat(x[i], w[i])
         _ += w[i]
