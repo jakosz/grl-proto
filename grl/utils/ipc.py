@@ -47,7 +47,8 @@ def pull(sock):
     """
     def wrap(f):
         def wrap(*args, **kwargs):
-            f(pickle.loads(sock.recv()), *args, **kwargs)
+            res = f(pickle.loads(sock.recv()), *args, **kwargs)
             sock.send(b'')
+            return res
         return wrap
     return wrap
