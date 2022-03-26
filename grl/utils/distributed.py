@@ -45,4 +45,4 @@ def sender(arr, sample, port=5555, tick=0):
     def _sender(arr):
         #i = np.random.choice(arr.shape[0], sample_size)
         return {'key': sample, 'value': arr[sample]}
-    return _sender(arr, sample_size)
+    return _sender(arr)
