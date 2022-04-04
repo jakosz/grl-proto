@@ -70,14 +70,16 @@ def checks(model, graph):
 def encode(model,
            graph, 
            steps, 
-           lr): 
+           lr, 
+           cos_decay): 
     with ProcessPoolExecutor(config.CORES) as p:
         for core in range(config.CORES):
             p.submit(worker_mp_wrapper, 
                      model, 
                      graph, 
                      utils.split_steps(steps, config.CORES), 
-                     lr) 
+                     lr, 
+                     cos_decay)
 
 
 def worker_mp_wrapper(model, 
