@@ -4,9 +4,9 @@
     3. Explore what's possible by combining the two with core grl functionality.  
 
 At the moment it mostly boils down to replicating some of the Numpy and Tensorflow functionality.  
-
+Convention: functions that modify their arguments in place (without a memcpy) do not return anything. 
 """
 
 from .bits import *
-from .numby import *
+from .core import *
 from .reduce import *
