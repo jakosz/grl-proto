@@ -4,6 +4,7 @@ from grl import config
 from grl import numby
 from grl import shmem
 from grl.graph import sample
+from grl.utils import random_hex
 from . import activations
 from . import initializers
 from . import utils
@@ -33,6 +34,7 @@ class Model:
                 graph.sample module. Defaults to 'nce' (noise contrastive). 
         """
         self._futures = []
+        self._id = random_hex()
         self._params = []
         self._refs = []
         self.activation = activations.get(activation)
