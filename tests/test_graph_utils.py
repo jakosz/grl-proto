@@ -57,7 +57,7 @@ def test_from_ogb_igraph(ogb_dataset):
     assert grl.graph.utils.hexdigest(d) == grl.graph.utils.hexdigest(g)
 
 
-def test_from_ogb_neighbours(ogb_dataset):
+def test_from_ogb_neighbors(ogb_dataset):
     
     dataset = ogb_dataset('zachary')
     graph = grl.graph.utils.from_ogb(dataset)
@@ -71,12 +71,12 @@ def test_from_ogb_neighbours(ogb_dataset):
         nb = ogb_edges[np.logical_or(fl, fr)]
         nb = np.unique(nb[nb != ogb_index])
 
-        assert grl.neighbours(grl_index, graph).shape[0] == nb.shape[0], "number of neighbours does not match"
+        assert grl.neighbors(grl_index, graph).shape[0] == nb.shape[0], "number of neighbors does not match"
         
         nbs = np.unique(nb.ravel())
         nbs = nbs[nbs != ogb_index]
 
-        assert np.all(np.sort(grl.neighbours(grl_index, graph)) == np.sort(nbs) + 1), "neighbour set does not match"
+        assert np.all(np.sort(grl.neighbors(grl_index, graph)) == np.sort(nbs) + 1), "neighbour set does not match"
 
 
 def test_from_ogb_vcount(ogb_dataset):

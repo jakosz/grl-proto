@@ -21,7 +21,7 @@ def test_get_neg_sample(graphs):
         positive = edgelist[1024:]
         negative = edgelist[:1024]
         for i in range(negative.shape[0]):
-            assert positive[i, 1] in grl.neighbours(positive[i, 0], G)
-            assert positive[i, 0] in grl.neighbours(positive[i, 1], G)    
-            assert not negative[i, 1] in grl.neighbours(negative[i, 0], G)
-            assert not negative[i, 0] in grl.neighbours(negative[i, 1], G)
+            assert positive[i, 1] in grl.neighbors(positive[i, 0], G)
+            assert positive[i, 0] in grl.neighbors(positive[i, 1], G)    
+            assert not negative[i, 1] in grl.neighbors(negative[i, 0], G)
+            assert not negative[i, 0] in grl.neighbors(negative[i, 1], G)
