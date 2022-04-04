@@ -1,4 +1,5 @@
-""" The ``graph.core`` module defines basic operations on grl's graph `data structure`. 
+""" The ``graph.core`` module defines basic operations on grl's graph `data structure`.  
+Functions defined here are exported at the package level. 
 
 Graph structure representation
 ==============================
