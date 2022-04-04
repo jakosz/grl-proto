@@ -18,8 +18,8 @@ def enumerate_edges(graph):
     res = np.empty((core.ecount(graph), 2), dtype=graph[1].dtype)
     i = 0
     for src in enumerate_nodes(graph):
-        nbs = core.neighbours(src, graph)
-        if nbs[0]:  # core.neighbours returns array([0]) for isolates
+        nbs = core.neighbors(src, graph)
+        if nbs[0]:  # core.neighbors returns array([0]) for isolates
             for dst in nbs:
                 res[i, 0] = src
                 res[i, 1] = dst
@@ -119,7 +119,7 @@ def to_adjacency(graph):
     n = core.vcount(graph)
     A = np.zeros((n, n), dtype=np.uint8)
     for i in numba.prange(n):
-        for j in core.neighbours(i+1, graph):  # @indexing
+        for j in core.neighbors(i+1, graph):  # @indexing
             if j:
                 A[i, j-1] = 1  # @indexing
     return A
