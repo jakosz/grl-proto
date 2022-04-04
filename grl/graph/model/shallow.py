@@ -81,19 +81,18 @@ def encode(model,
            steps, 
            lr, 
            cos_decay): 
-    p = ProcessPoolExecutor(config.CORES)
-    for core in range(config.CORES):
-        model._futures.append(
-            p.submit(worker_mp_wrapper, 
-                worker=getattr(workers, model.type),
-                sampler=model.sampler,
-                activation=model.activation,
-                graph=graph,
-                refs=model._refs,
-                steps=utils.split_steps(steps, config.CORES), 
-                lr=lr, 
-                cos_decay=cos_decay, 
-                part_size=config.PART_SIZE))
+    with ProcessPoolExecutor(config.CORES) as p:
+        for core in range(config.CORES):
+            model._futures.append(
+                p.submit(worker_mp_wrapper, 
+                         worker=getattr(workers, model.type),
+                         sampler=model.sampler,
+                         activation=model.activation,
+                         graph=graph,
+                         refs=model.refs,
+                         steps=utils.split_steps(steps, config.CORES), 
+                         lr=lr, 
+                         cos_decay=cos_decay)) 
 
 
 def worker_mp_wrapper(worker,
@@ -103,11 +102,10 @@ def worker_mp_wrapper(worker,
                       refs,
                       steps,
                       lr, 
-                      cos_decay, 
-                      part_size):
-    parts = steps//part_size
+                      cos_decay): 
+    parts = steps//config.PART_SIZE
     for i in range(parts):
-        x, y = sampler(graph, part_size)
+        x, y = sampler(graph, config.PART_SIZE)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
-        worker(x, y, *[shmem.get(e) for e in refs], clr, activation)
+        worker(x, y, *(shmem.get(e) for e in refs), clr, activation)
 
