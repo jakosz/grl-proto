@@ -1,6 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor
 
 from grl import config
+from grl import metrics
 from grl import numby
 from grl import shmem
 from grl.graph import sample
