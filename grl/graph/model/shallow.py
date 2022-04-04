@@ -45,11 +45,11 @@ class Model:
         self.initialize()
 
     def evaluate(self, graph):
-        return metrics.accuracy(graph, *self.params)
+        return metrics.accuracy(graph, *self.params, activation=self.activation)
 
     def fit(self, graph, steps, lr=.025, cos_decay=False):
         checks(self, graph)
-        encode(self, graph, steps, lr, cos_decay)
+        return encode(self, graph, steps, lr, cos_decay)
 
     def initialize(self):
         getattr(initializers, self.type)(self)
@@ -74,7 +74,7 @@ def encode(model,
            cos_decay): 
     with ProcessPoolExecutor(config.CORES) as p:
         for core in range(config.CORES):
-            p.submit(worker_mp_wrapper, 
+            yield p.submit(worker_mp_wrapper, 
                      model, 
                      graph, 
                      utils.split_steps(steps, config.CORES), 
