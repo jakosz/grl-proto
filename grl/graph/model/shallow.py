@@ -4,6 +4,7 @@ from grl import config
 from grl import numby
 from grl import shmem
 from grl.graph import sample
+from . import activations
 from . import initializers
 from . import utils
 from . import workers
@@ -14,6 +15,7 @@ class Model:
                  graph, 
                  dim, 
                  type='asymmetric', 
+                 activation='sigmoid', 
                  sampler='nce'):
         """ Create a shallow model of a graph.
 
@@ -33,6 +35,7 @@ class Model:
         self._futures = []
         self._params = []
         self._refs = []
+        self.activation = activations.get(activation)
         self.dim = dim
         self.graph = graph
         self.sampler = getattr(sample, sampler)
@@ -82,6 +85,6 @@ def worker_mp_wrapper(model,
     for i in range(parts):
         x, y = model.sampler(graph, config.PART_SIZE)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
-        worker(x, y, *(shmem.get(e) for e in model._refs), clr)
+        worker(x, y, *(shmem.get(e) for e in model._refs), clr, model.activation)
 
 
