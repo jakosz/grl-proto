@@ -9,7 +9,7 @@ from . import utils
 def get_random_anti_edge(graph):
     """ Sample a random nonexistent edge. """
     src = np.random.choice(graph[1])
-    nbs = core.neighbours(src, graph)
+    nbs = core.neighbors(src, graph)
     anti = utils.enumerate_without(graph, nbs)
     dst = np.random.choice(anti)
     return np.array([src, dst], dtype=graph[1].dtype)
@@ -19,7 +19,7 @@ def get_random_anti_edge(graph):
 def get_random_edge(graph):
     """ Sample a random existing edge. """
     src = np.random.choice(graph[1])
-    dst = np.random.choice(core.neighbours(src, graph))
+    dst = np.random.choice(core.neighbors(src, graph))
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
