@@ -7,29 +7,39 @@ from grl.numby import *
 
 
 @numba.njit(cache=True)
-def accuracy(g, L, R=None):
+def accuracy(g, L, R=None, activation):
     if R is None:
-        raise NotImplementedError("symmetric model not supported")
+        return symmetric(g, L, activation)
     if L.shape != R.shape:
-        raise NotImplementedError("diagonal model not supported")
-    return asymmetric(g, L, R)
+        return diagonal(g, L, R, activation) 
+    return asymmetric(g, L, R, activation)
 
 
 @numba.njit(cache=True, parallel=True)
-def asymmetric(g, L, R):
+def asymmetric(g, L, R, activation):
     acc = np.empty(config.CORES, dtype=np.float32)
     for i in numba.prange(config.CORES):
         x, y = graph.sample.nce(g, 8192)
-        yhat = sigmoid(sum1(L[x[:, 0]]*R[x[:, 1]])).astype(np.float32)
+        yhat = activation(sum1(L[x[:, 0]]*R[x[:, 1]])).astype(np.float32)
         acc[i] = (round(yhat) == y).mean()
     return np.mean(acc)
 
 
 @numba.njit(cache=True, parallel=True)
-def diagonal(g, L, D):
+def diagonal(g, L, D, activation):
     acc = np.empty(config.CORES, dtype=np.float32)
     for i in numba.prange(config.CORES):
         x, y = graph.sample.nce(g, 8192)
-        yhat = sigmoid(sum1(L[x[:, 0]]*L[x[:, 1]]*D)).astype(np.float32)
+        yhat = activation(sum1(L[x[:, 0]]*L[x[:, 1]]*D)).astype(np.float32)
+        acc[i] = (round(yhat) == y).mean()
+    return np.mean(acc)
+
+
+@numba.njit(cache=True, parallel=True)
+def symmetric(g, L, activation):
+    acc = np.empty(config.CORES, dtype=np.float32)
+    for i in numba.prange(config.CORES):
+        x, y = graph.sample.nce(g, 8192)
+        yhat = activation(sum1(L[x[:, 0]]*L[x[:, 1]])).astype(np.float32)
         acc[i] = (round(yhat) == y).mean()
     return np.mean(acc)
