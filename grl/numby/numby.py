@@ -1,13 +1,13 @@
 import numba
 import numpy as np
 
-
-EPSILON = 1e-7
+from grl import constants
 
 
 @numba.njit(cache=True)
 def binary_crossentropy(p, q):
-    return -np.mean(p*np.log(q+EPSILON) + (1-p)*np.log(1-q+EPSILON))
+    e = constants.EPSILON
+    return -np.mean(p*np.log(q+e) + (1-p)*np.log(1-q+e))
 
 
 @numba.njit(cache=True)
