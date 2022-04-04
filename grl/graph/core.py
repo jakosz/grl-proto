@@ -75,8 +75,8 @@ def ecount(graph):
 
 
 @numba.njit(cache=True)
-def neighbours(i, graph):
-    """ Get neighbours of i-th node. 
+def neighbors(i, graph):
+    """ Get neighbors of i-th node. 
     """
     v, e = graph
     if v[i+1] - v[i] > 0:
