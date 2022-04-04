@@ -49,6 +49,9 @@ class Model:
         checks(self, graph)
         encode(self, graph, steps, lr, cos_decay)
 
+    def initialize(self):
+        getattr(initializers, self.type)(self)
+
     @property
     def params(self):
         return self._params
