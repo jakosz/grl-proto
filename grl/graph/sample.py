@@ -73,6 +73,21 @@ def get_neg_sample(graph, n):
     return X, Y
 
 
+@numba.njit(cache=True)
+def _random_uniform_walk(vi, graph, length, data=None, step=0):
+    if data is None:
+        data = np.zeros(length, dtype=graph[0].dtype.type)
+    if length == 0:
+        return data
+    data[step] = np.random.choice(core.neighbors(vi, graph))
+    return _random_uniform_walk(data[step], graph, length-1, data, step+1)
+
+
+@numba.njit(cache=True)
+def random_walk(vi, graph, length):
+    return _random_uniform_walk(vi, graph, length)
+
+
 # API proto
 nce = get_nce_sample
 neg = get_neg_sample
