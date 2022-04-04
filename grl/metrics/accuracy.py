@@ -7,8 +7,8 @@ from grl.numby import *
 
 
 @numba.njit(cache=True)
-def accuracy(g, L, R=None, activation):
-    if R is None:
+def accuracy(g, L, R, activation):
+    if np.all(L[0] == R[0]):
         return symmetric(g, L, activation)
     if L.shape != R.shape:
         return diagonal(g, L, R, activation) 
