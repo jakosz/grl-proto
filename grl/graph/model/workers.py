@@ -2,6 +2,7 @@ import numba
 import numpy as np
 
 from grl import config 
+from grl import numby
 
 
 @numba.njit(cache=True)
@@ -21,7 +22,7 @@ def asymmetric(x, y, L, R, lr, activation):
 
 @numba.njit(cache=True)
 def clip(x):
-    grl.clip_1d_inplace(x, -config.CLIP, config.CLIP)
+    numby.clip_1d_inplace(x, -config.CLIP, config.CLIP)
     return x
 
 
