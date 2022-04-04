@@ -44,6 +44,20 @@ def graphs():
 
 
 @pytest.fixture(scope="module")
+def graphs_small():
+    
+    def get_graphs(seed=13):
+        return [
+            grl.graph.random.erdos(16, .5, seed=seed),
+            grl.graph.random.fire(16, .5, seed=seed),
+            grl.graph.random.barabasi(16, 2, seed=seed),
+            grl.graph.random.geometric(16, .5, seed=seed)
+        ]
+    
+    return get_graphs
+
+
+@pytest.fixture(scope="module")
 def ogb_dataset():
     
     def wrap(name):
