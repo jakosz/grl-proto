@@ -39,13 +39,13 @@ class Model:
         return self._refs
 
 
-def checks():
+def checks(model, graph):
     pass
 
 
-def encode():
+def encode(model, graph):
     pass
 
 
-def worker_mp_wrapper():
+def worker_mp_wrapper(model, graph):
     pass
