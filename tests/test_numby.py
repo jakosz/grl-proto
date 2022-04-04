@@ -45,7 +45,7 @@ def test_random_choice():
     w = -px + px.max() + px.min()        
     w = (w*x.size).astype(np.uint64)
     # draw a large sample
-    s = random_choice(np.arange(128), 2**20, w)  
+    s = grl.random_choice(np.arange(128), 2**20, w)  
     cs = np.bincount(s)  # counts
     ps = cs/cs.sum()  # probs
     # test
