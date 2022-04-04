@@ -1,4 +1,5 @@
 import numba
+import numpy as np
 
 from grl import config 
 
