@@ -13,7 +13,7 @@ def expand_dims(f):
 
 
 @expand_dims
-@numba.njit()
+@numba.njit(cache=True)
 def asymmetric(x, L, R, activation):
     xL = L[x[:, 0]]
     xR = R[x[:, 1]]
@@ -21,7 +21,7 @@ def asymmetric(x, L, R, activation):
 
 
 @expand_dims
-@numba.njit()
+@numba.njit(cache=True)
 def diagonal(x, L, D, activation):
     xL = L[x[:, 0]]
     xR = L[x[:, 1]]
@@ -29,7 +29,7 @@ def diagonal(x, L, D, activation):
 
 
 @expand_dims
-@numba.njit()
+@numba.njit(cache=True)
 def symmetric(x, L, activation):
     xL = L[x[:, 0]]
     xR = L[x[:, 1]]
