@@ -7,7 +7,9 @@ from multiprocessing import RawArray as RawArray
 
 import numpy as np
 
-from ..numby import random_randn_fill_inplace
+from grl.numby import random_randn_fill_inplace
+from grl.graph.utils import hexdigest
+
 from . import _obj
 
 
@@ -55,7 +57,7 @@ def randn(shape, name):
 
 def register(graph):
     nodes, edges = graph
-    name = f"graph_{grl.graph.utils.hexdigest(graph)[:16]}"
+    name = f"graph_{hexdigest(graph)[:16]}"
     nn, ne = (f"{name}_{e}" for e in ["nodes", "edges"])
     set(nodes, nn)
     set(edges, ne)
