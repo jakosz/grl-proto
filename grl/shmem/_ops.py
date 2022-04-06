@@ -11,20 +11,6 @@ from ..numby import random_randn_fill_inplace
 from . import _obj
 
 
-__all__ = [
-    "empty",
-    "empty_like",
-    "get",
-    "load",
-    "ls",
-    "randn",
-    "rm",
-    "set",
-    "zeros",
-    "zeros_like"
-]
-
-
 _ctype = lambda x: np.ctypeslib.as_ctypes_type(x)
 _size = lambda x: int(np.prod(x))
 _shared = lambda s, t: np.frombuffer(RawArray(_ctype(t), _size(s)), dtype=t).reshape(*s)
@@ -65,6 +51,16 @@ def randn(shape, name):
     x = empty(shape, dtype=np.float32, name=name)
     random_randn_fill_inplace(x)
     return x
+
+
+def register(graph):
+    nodes, edges = graph
+    name = f"graph_{grl.graph.utils.hexdigest(graph)[:16]}"
+    nn, ne = (f"{name}_{e}" for e in ["nodes", "edges"])
+    set(nodes, nn)
+    set(edges, ne)
+    setattr(_obj, name, (get(nn), get(ne)))
+    return name
 
 
 def rm(name):
