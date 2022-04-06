@@ -15,7 +15,7 @@ from . import workers
 
 class Model:
     def __init__(self, 
-                 graph, 
+                 obs, 
                  dim, 
                  type='asymmetric', 
                  activation='sigmoid', 
@@ -24,8 +24,9 @@ class Model:
 
             Parameters
             ----------
-            graph : tuple 
-                Input graph. 
+            obs : int or tuple 
+                Numbers of observations: int or 1-tuple for unimodal graph, 
+                2-tuple for bimodal. 
             dim : int
                 Embedding dimensionality.
             type : str, optional
@@ -37,26 +38,44 @@ class Model:
                 Name of the sampler, one of the functions implemented in the 
                 graph.sample module. Defaults to 'nce' (noise contrastive). 
         """
-        self._futures = []
+        self._futures = []  # for debugging; workers return None
         self._id = random_hex()
-        self._graph_ref = utils.autoregister(graph)
         self._params = []
-        self._refs = []
+        self._refs = []  # param refs
         self.activation = activations.get(activation)
         self.dim = dim
-        self.graph = shmem.get(self._graph_ref) 
+        self.obs = obs
         self.sampler = getattr(sample, sampler)
         self.type = type
         self.initialize()
 
-    def evaluate(self, graph, sample_size=8192):
-        x, y = self.sampler(graph, sample_size)
+    def evaluate(self, ref, sample_size=8192):
+        x, y = self.sampler(shmem.get(ref), sample_size)
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph, steps, lr=.025, cos_decay=False):
-        checks(self, graph)
-        return encode(self, self._graph_ref, steps, lr, cos_decay)
+    def fit(self, ref, steps, lr=.025, cos_decay=False):
+        """ Perform `steps` parameter updates.
+
+            Parameters
+            ----------
+            ref : str
+                Reference to a graph registered in grl's shmem.
+            steps : int
+                Number of updates to perform.
+            lr : float, optional
+                Learning rate. Defaults to 0.025.
+            cos_decay : bool, optional
+                If set, cosine decay schedule will be applied to learning rate.
+                Defaults to False.
+
+            Returns
+            -------
+            None
+                Used for side effects. 
+        """
+        checks(self, ref)
+        return encode(self, ref, steps, lr, cos_decay)
 
     def initialize(self):
         getattr(initializers, self.type)(self)
@@ -73,12 +92,12 @@ class Model:
         return self._refs
 
 
-def checks(model, graph):
+def checks(model, ref):
     pass
 
 
 def encode(model,
-           graph_ref, 
+           ref, 
            steps, 
            lr, 
            cos_decay): 
@@ -89,7 +108,7 @@ def encode(model,
                          worker=getattr(workers, model.type),
                          sampler=model.sampler,
                          activation=model.activation,
-                         graph_ref=graph_ref,
+                         ref=ref,
                          refs=model.refs,
                          steps=utils.split_steps(steps, config.CORES), 
                          lr=lr, 
@@ -99,14 +118,14 @@ def encode(model,
 def worker_mp_wrapper(worker,
                       sampler,
                       activation,
-                      graph_ref, 
-                      refs,
+                      ref,   # data ref  
+                      refs,  # param refs
                       steps,
                       lr, 
                       cos_decay): 
     parts = steps//config.PART_SIZE
     for i in range(parts):
-        x, y = sampler(shmem.get(graph_ref), config.PART_SIZE)
+        x, y = sampler(shmem.get(ref), config.PART_SIZE)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
         worker(x, y, *(shmem.get(e) for e in refs), clr, activation)
 
