@@ -49,7 +49,7 @@ def test_random_choice():
     cs = np.bincount(s)  # counts
     ps = cs/cs.sum()  # probs
     # test
-    assert np.corrcoef(px, ps)[0, 1] < -.999
+    assert np.corrcoef(px, ps)[0, 1] < -.998
 
 
 def test_reduce_max_2d(random_normal_2d):
