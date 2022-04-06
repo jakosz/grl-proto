@@ -39,11 +39,12 @@ class Model:
         """
         self._futures = []
         self._id = random_hex()
+        self._graph_ref = utils.autoregister(graph)
         self._params = []
         self._refs = []
         self.activation = activations.get(activation)
         self.dim = dim
-        self.graph = graph
+        self.graph = shmem.get(self._graph_ref) 
         self.sampler = getattr(sample, sampler)
         self.type = type
         self.initialize()
@@ -55,7 +56,7 @@ class Model:
 
     def fit(self, graph, steps, lr=.025, cos_decay=False):
         checks(self, graph)
-        return encode(self, graph, steps, lr, cos_decay)
+        return encode(self, self._graph_ref, steps, lr, cos_decay)
 
     def initialize(self):
         getattr(initializers, self.type)(self)
@@ -77,7 +78,7 @@ def checks(model, graph):
 
 
 def encode(model,
-           graph, 
+           graph_ref, 
            steps, 
            lr, 
            cos_decay): 
@@ -88,7 +89,7 @@ def encode(model,
                          worker=getattr(workers, model.type),
                          sampler=model.sampler,
                          activation=model.activation,
-                         graph=graph,
+                         graph_ref=graph_ref,
                          refs=model.refs,
                          steps=utils.split_steps(steps, config.CORES), 
                          lr=lr, 
@@ -98,14 +99,14 @@ def encode(model,
 def worker_mp_wrapper(worker,
                       sampler,
                       activation,
-                      graph, 
+                      graph_ref, 
                       refs,
                       steps,
                       lr, 
                       cos_decay): 
     parts = steps//config.PART_SIZE
     for i in range(parts):
-        x, y = sampler(graph, config.PART_SIZE)
+        x, y = sampler(shmem.get(graph_ref), config.PART_SIZE)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
         worker(x, y, *(shmem.get(e) for e in refs), clr, activation)
 

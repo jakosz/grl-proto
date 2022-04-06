@@ -1,5 +1,7 @@
 import numba
 
+import grl
+
 
 @numba.njit(cache=True)
 def split_steps(steps, cores):
@@ -10,3 +12,13 @@ def split_steps(steps, cores):
     # so we need to correct for that. 
     res = steps//cores
     return res - res % 2
+
+
+def autoregister(graph):
+    nodes, edges = graph
+    name = f"graph_{grl.graph.utils.hexdigest(graph)[:16]}"
+    nn, ne = (f"{name}_{e}" for e in ["nodes", "edges"])
+    grl.set(nodes, nn)
+    grl.set(edges, ne)
+    setattr(grl.shmem._obj, name, (grl.get(nn), grl.get(ne)))
+    return name
