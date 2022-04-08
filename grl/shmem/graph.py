@@ -18,9 +18,9 @@ def discover(graph):
         str
             Graph reference (shared memory name) or empty string.
     """
-    name = name(graph)
-    if _ops.get(name):
-        return name
+    graph_name = name(graph)
+    if _ops.get(graph_name):
+        return graph_name
     else:
         return ""
 
@@ -35,10 +35,13 @@ def register(graph):
     """ Copy nodes and edges to shared memory, and create references to nodes,
         edges, and the graph. 
     """
-    nodes, edges = graph
-    gn = name(graph) 
-    nn, en = (f"{gn}_{e}" for e in ["nodes", "edges"])
-    _ops.set(nodes, nn)
-    _ops.set(edges, en)
-    setattr(_obj, gn, (get(nn), get(en)))
-    return name
+    graph_name = name(graph) 
+    if _ops.get(graph_name):
+        return graph_name 
+    else:
+        nodes, edges = graph
+        nodes_name, edges_name = (f"{graph_name}_{e}" for e in ["nodes", "edges"])
+        _ops.set(nodes, nodes_name)
+        _ops.set(edges, edges_name)
+        setattr(_obj, graph_name, (_ops.get(nodes_name), _ops.get(edges_name)))
+        return graph_name
