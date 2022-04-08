@@ -85,6 +85,12 @@ def neighbors(i, graph):
         return np.array([0], dtype=e.dtype)
 
 
+def subgraph(i, graph):
+    """ Filter to a subgraph spanned by the given nodes.
+    """
+    pass
+
+
 @numba.njit(cache=True)
 def vcount(graph):
     """ Get vertex count of a graph.
