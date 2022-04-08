@@ -49,8 +49,12 @@ class Model:
         self.type = type
         self.initialize()
 
-    def evaluate(self, ref, sample_size=8192):
-        x, y = self.sampler(shmem.get(ref), sample_size)
+    def evaluate(self, graph_or_ref, sample_size=8192):
+        if type(graph_or_ref) is not str:
+            graph = graph_or_ref
+        else:
+            graph = shmem.get(graph_or_ref)
+        x, y = self.sampler(graph, sample_size)
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
