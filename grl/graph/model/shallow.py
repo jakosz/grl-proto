@@ -58,7 +58,7 @@ class Model:
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph_or_ref, steps, lr=.025, cos_decay=False):
+    def fit(self, graph_or_ref, steps, lr=.25, cos_decay=False):
         """ Perform `steps` parameter updates.
 
             Parameters
