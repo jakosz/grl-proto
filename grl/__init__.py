@@ -13,6 +13,6 @@ from . import utils
 from .graph.core import *
 from .nn import *
 from .numby import *
-from .shmem import *
+from .shmem._ops import *
 
 __version__ = "0.7.0"

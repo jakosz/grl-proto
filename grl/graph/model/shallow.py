@@ -5,7 +5,6 @@ from grl import metrics
 from grl import numby
 from grl import shmem
 from grl.graph import sample
-from grl.shmem import graph as shmem_graph
 from grl.utils import log, random_hex
 from . import activations
 from . import initializers
@@ -80,7 +79,7 @@ class Model:
                 Used for side effects. 
         """
         if type(graph_or_ref) is not str:
-            ref = shmem_graph.register(graph_or_ref)
+            ref = shmem.graph.register(graph_or_ref)
         else:
             ref = graph_or_ref
         checks(self, shmem.get(ref))
