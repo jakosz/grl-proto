@@ -54,13 +54,13 @@ class Model:
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, ref, steps, lr=.025, cos_decay=False):
+    def fit(self, graph_or_ref, steps, lr=.025, cos_decay=False):
         """ Perform `steps` parameter updates.
 
             Parameters
             ----------
-            ref : str
-                Reference to a graph registered in grl's shmem.
+            graph_or_ref : tuple or str
+                A graph or a reference to a graph registered in grl's shmem.
             steps : int
                 Number of updates to perform.
             lr : float, optional
@@ -74,7 +74,11 @@ class Model:
             None
                 Used for side effects. 
         """
-        checks(self, ref)
+        if type(graph_or_ref) is not str:
+            ref = shmem.graph.register(graph_or_ref)
+        else:
+            ref = graph_or_ref
+        checks(self, shmem.get(ref))
         return encode(self, ref, steps, lr, cos_decay)
 
     def initialize(self):
@@ -92,7 +96,9 @@ class Model:
         return self._refs
 
 
-def checks(model, ref):
+def checks(model, graph):
+    """ Run checks to validate that an a Model can be fitted to graph. 
+    """
     pass
 
 
