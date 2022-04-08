@@ -7,12 +7,15 @@ def with_model(type, sampler, activation):
     def wrap(f):
         def wrap(graphs):
             for G in graphs():
-                ref = grl.register(G)
                 obs = grl.vcount(G)
-                model = grl.graph.Model(obs, 16, type=type, sampler=sampler, activation=activation)
-                at0 = model.evaluate(ref)
-                model.fit(ref, 2**14, cos_decay=False)
-                at1 = model.evaluate(ref)
+                model = grl.graph.Model(obs=grl.vcount(G), 
+                                        dim=16, 
+                                        type=type, 
+                                        sampler=sampler, 
+                                        activation=activation)
+                at0 = model.evaluate(G)
+                model.fit(G, 2**14, cos_decay=False)
+                at1 = model.evaluate(G)
                 assert at1 > at0
         return wrap
     return wrap
