@@ -68,7 +68,7 @@ class Model:
             steps : int
                 Number of updates to perform.
             lr : float, optional
-                Learning rate. Defaults to 0.025.
+                Learning rate. Defaults to 0.25.
             cos_decay : bool, optional
                 If set, cosine decay schedule will be applied to learning rate.
                 Defaults to False.
