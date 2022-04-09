@@ -38,3 +38,9 @@ def background(f):
                 self.pool.shutdown(wait=False)
         return BackgroundTask(f)
     return wrap
+
+
+# Jupyter notebook context 
+
+if globals().get('get_ipython'):
+    get_ipython().run_line_magic('autosave', '5')
