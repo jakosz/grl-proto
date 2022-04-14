@@ -3,14 +3,14 @@ import grl
 from common import graphs_small as graphs 
 
 
-def with_model(type, sampler, activation):
+def with_model(emb_type, sampler, activation):
     def wrap(f):
         def wrap(graphs):
             for G in graphs():
                 obs = grl.vcount(G)
                 model = grl.graph.Model(obs=grl.vcount(G), 
                                         dim=16, 
-                                        type=type, 
+                                        emb_type=emb_type, 
                                         sampler=sampler, 
                                         activation=activation)
                 at0 = model.evaluate(G)
