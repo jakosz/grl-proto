@@ -36,6 +36,12 @@ def test_hstack2(random_normal_2d, random_binomial_2d):
     assert np.all(np.hstack([x, y]) == grl.hstack2(x, y))
 
 
+def test_nunique_unsafe_1d():
+    for step in range(8):
+        x = np.random.randint(0, 2**16-1, 2**16)
+        assert grl.nunique_unsafe_1d(x) == np.unique(x).size
+        
+
 def test_random_choice():
     # prepare the data
     x = np.random.randint(0, 128, 1024)  # data
