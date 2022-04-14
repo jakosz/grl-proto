@@ -48,7 +48,7 @@ class Model:
         self.obs = obs
         self.sampler = getattr(sample, sampler)
         self.emb_type = emb_type
-        self.vcount2 = 0 if self.bimodal else obs[1] 
+        self.vcount2 = obs[1] if self.bimodal else 0 
         self.initialize()
 
     def evaluate(self, graph_or_ref, sample_size=8192):
@@ -56,7 +56,7 @@ class Model:
             graph = graph_or_ref
         else:
             graph = shmem.get(graph_or_ref)
-        x, y = self.sampler(graph, sample_size)
+        x, y = self.sampler(graph, sample_size, self.vcount2)
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
