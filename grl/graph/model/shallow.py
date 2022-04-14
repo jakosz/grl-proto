@@ -48,7 +48,7 @@ class Model:
         self.obs = obs
         self.sampler = getattr(sample, sampler)
         self.emb_type = emb_type
-        self.vcount2 = 0  # nodes in secondary/non-indexed modality; 0 for unimodal
+        self.vcount2 = 0 if self.bimodal else obs[1] 
         self.initialize()
 
     def evaluate(self, graph_or_ref, sample_size=8192):
@@ -85,11 +85,6 @@ class Model:
         else:
             ref = graph_or_ref
         checks(self, shmem.get(ref))
-        
-        # count nodes in secondary/non-indexed modality
-        if self.bimodal and not self.vcount2:
-            self.vcount2 = numby.nunique_unsafe_1d(shmem.get(ref)[1])
-
         return encode(self, ref, steps, lr, cos_decay)
 
     def initialize(self):
