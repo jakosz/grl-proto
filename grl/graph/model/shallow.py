@@ -17,7 +17,7 @@ class Model:
     def __init__(self, 
                  obs, 
                  dim, 
-                 type='asymmetric', 
+                 emb_type='asymmetric', 
                  activation='sigmoid', 
                  sampler='nce'):
         """ Create a shallow model of a graph.
@@ -29,7 +29,7 @@ class Model:
                 2-tuple for bimodal. 
             dim : int
                 Embedding dimensionality.
-            type : str, optional
+            emb_type : str, optional
                 Shallow model to use. Should be one of: asymmetric, diagonal, 
                 symmetric. Defaults to 'asymmetric'.
             activation : str, optional
@@ -47,7 +47,7 @@ class Model:
         self.dim = dim
         self.obs = obs
         self.sampler = getattr(sample, sampler)
-        self.type = type
+        self.emb_type = emb_type
         self.vcount2 = 0  # nodes in secondary/non-indexed modality; 0 for unimodal
         self.initialize()
 
@@ -94,14 +94,14 @@ class Model:
 
     def initialize(self):
         # init params
-        getattr(initializers, self.type)(self)
+        getattr(initializers, self.emb_type)(self)
 
     @property
     def params(self):
         return self._params
 
     def predict(self, x):
-        return getattr(predictors, self.type)(x, *self.params, self.activation)
+        return getattr(predictors, self.emb_type)(x, *self.params, self.activation)
     
     @property
     def refs(self):
@@ -123,7 +123,7 @@ def encode(model,
         for core in range(config.CORES):
             model._futures.append(
                 p.submit(worker_mp_wrapper, 
-                         worker=getattr(workers, model.type),
+                         worker=getattr(workers, model.emb_type),
                          sampler=model.sampler,
                          activation=model.activation,
                          ref=ref,
