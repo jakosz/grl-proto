@@ -47,13 +47,21 @@ def sampler(f_positives, f_negatives):
 @numba.njit(cache=True)
 def get_random_anti_edge(graph, vcount2=0):
     """ Sample a random nonexistent edge. """
-    vs = np.random.choice(core.vcount(graph), 16) + 1  # @indexing
-    src, dst = vs[0], vs[1:]
-    nbs = core.neighbors(src, graph)
-    for v in dst:
-        if not numby.isin_1d(v, nbs):
-            return np.array([src, v], dtype=graph[1].dtype)
-    return get_random_anti_edge(graph)
+    if not vcount2:
+        vs = np.random.choice(core.vcount(graph), 16) + 1  # @indexing
+        src, dst = vs[0], vs[1:]
+        nbs = core.neighbors(src, graph)
+        for v in dst:
+            if not numby.isin_1d(v, nbs):
+                return np.array([src, v], dtype=graph[1].dtype)
+    else:
+        src = np.random.choice(core.vcount(graph)) + 1  # @indexing
+        dst = np.random.choice(vcount2, 16) + 1  # @indexing
+        nbs = core.neighbors(src, graph)
+        for v in dst:
+            if not numby.isin_1d(v, nbs):
+                return np.array([src, v], dtype=graph[1].dtype)
+    return get_random_anti_edge(graph, vcount2)
 
 
 @numba.njit(cache=True)
