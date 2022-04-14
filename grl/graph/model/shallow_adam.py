@@ -95,7 +95,7 @@ class ModelAdam:
         return self._params
 
     def predict(self, x):
-        return getattr(predictors, self.emb_type)(x, *self.params, self.activation)
+        return getattr(predictors, self.emb_type)(x, *self.params[:2], self.activation)
     
     @property
     def refs(self):
