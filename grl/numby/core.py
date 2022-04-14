@@ -71,6 +71,36 @@ def hstack2(x, y):
     return res
 
 
+@numba.njit()
+def nunique_unsafe_1d(x):
+    """ Count number of unique elements of x 
+        IN A SPECIAL CASE where x.max() < x.size 
+        
+        Parameters
+        ----------
+        x : 1darray
+
+        Returns
+        -------
+        int
+
+        Notes
+        -----
+        This is a temporary solution for counting non-indexed nodes 
+        in bimodal graphs.
+
+        Use with caution: if the condition of the special case is violated, 
+        this function will cause segfault.  
+    """
+    slot = np.zeros(x.shape[0], dtype=np.uint8)
+    res = np.zeros(1, dtype=np.uint64)
+    for i in range(x.shape[0]):
+        if not slot[x[i]]:
+            res[0] += 1
+        slot[x[i]] = 1 
+    return res[0]
+
+
 @numba.njit(cache=True)
 def random_choice(x, s, w=None): 
     """ Weighted sample with replacement.
