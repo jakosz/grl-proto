@@ -43,10 +43,12 @@ class Model:
         self._params = []
         self._refs = []  # param refs
         self.activation = activations.get(activation)
+        self.bimodal = False if type(obs) is int or len(obs) == 1 else True
         self.dim = dim
         self.obs = obs
         self.sampler = getattr(sample, sampler)
         self.type = type
+        self.vcount2 = 0  # nodes in secondary/non-indexed modality; 0 for unimodal
         self.initialize()
 
     def evaluate(self, graph_or_ref, sample_size=8192):
@@ -83,9 +85,15 @@ class Model:
         else:
             ref = graph_or_ref
         checks(self, shmem.get(ref))
+        
+        # count nodes in secondary/non-indexed modality
+        if self.bimodal and not self.vcount2:
+            self.vcount2 = numby.nunique_unsafe_1d(shmem.get(ref)[1])
+
         return encode(self, ref, steps, lr, cos_decay)
 
     def initialize(self):
+        # init params
         getattr(initializers, self.type)(self)
 
     @property
@@ -120,6 +128,7 @@ def encode(model,
                          activation=model.activation,
                          ref=ref,
                          refs=model.refs,
+                         vcount2=model.vcount2,
                          steps=utils.split_steps(steps, config.CORES), 
                          lr=lr, 
                          cos_decay=cos_decay)) 
@@ -130,12 +139,13 @@ def worker_mp_wrapper(worker,
                       activation,
                       ref,   # data ref  
                       refs,  # param refs
+                      vcount2,
                       steps,
                       lr, 
                       cos_decay): 
     parts = steps//config.PART_SIZE
     for i in range(parts):
-        x, y = sampler(shmem.get(ref), config.PART_SIZE)
+        x, y = sampler(shmem.get(ref), config.PART_SIZE, vcount2)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
         worker(x, y, *(shmem.get(e) for e in refs), clr, activation)
 
