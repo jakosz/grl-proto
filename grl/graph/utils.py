@@ -9,7 +9,27 @@ from . import core
 
 
 def digest(graph):
-    return hashlib.sha256(b"".join([e.tobytes() for e in graph])).digest()
+    """ Get SHA256 digest of a deterministic graph sample.
+
+        Parameters
+        ----------
+        graph : tuple
+
+        Returns
+        -------
+        bytes
+    """
+    nodes, edges = graph
+    # make seed from hash
+    n = nodes[:1024].tobytes()
+    e = edges[:1024].tobytes()
+    seed = hashlib.sha256(n+e).digest()
+    # sample nodes and edges with seed
+    np.random.seed(np.frombuffer(seed[:4], dtype=np.uint32))
+    n = np.random.choice(nodes, 1024).tobytes()
+    e = np.random.choice(edges, 1024).tobytes()
+    # hash the sample
+    return hashlib.sha256(n+e).digest()
 
 
 @numba.njit(cache=True)
