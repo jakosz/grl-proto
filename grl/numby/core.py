@@ -71,7 +71,7 @@ def hstack2(x, y):
     return res
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def nunique_unsafe_1d(x):
     """ Count number of unique elements of x 
         IN A SPECIAL CASE where x.max() < x.size 
