@@ -7,7 +7,7 @@ from grl import numby
 
 @numba.njit(cache=True)
 def asymmetric(x, y, lr, b1, b2, activation, 
-               xL, xR, mL, mR, vL, vR, tL, tR):
+               L, R, mL, mR, vL, vR, tL, tR):
     n = x.shape[0]
     for j in range(n):
         iL, iR = x[j]
