@@ -8,6 +8,6 @@ from . import random
 from . import sample
 from . import utils
 
-from .model import Model
+from .model import Model, ModelAdam
 from .plot import plot
 from .utils import load, save
