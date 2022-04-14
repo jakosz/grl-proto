@@ -18,6 +18,9 @@ def asymmetric(x, y, lr, b1, b2, activation,
         dxL = clip(xR*dy)
         dxR = clip(xL*dy)
         # update adam parameters
+        # update counters:
+        tL[iL] += 1
+        tR[iR] += 1
         # learning rate: 
         aL = lr * np.sqrt(1.0 - b2**tL[iL]) / (1.0 - b1**tL[iL]) 
         aR = lr * np.sqrt(1.0 - b2**tR[iR]) / (1.0 - b1**tR[iR])
@@ -27,9 +30,6 @@ def asymmetric(x, y, lr, b1, b2, activation,
         # second moment: 
         vL[iL] = b2 * vL[iL] + (1.0 - b2) * dxL**2
         vR[iR] = b2 * vR[iR] + (1.0 - b2) * dxR**2
-        # update counters:
-        tL[iL] += 1
-        tR[iR] += 1
         # update model parameters
         L[iL] -= aL * mL[iL] / (np.sqrt(vL[iL]) + config.EPSILON) 
         R[iR] -= aR * mR[iR] / (np.sqrt(vR[iR]) + config.EPSILON)
