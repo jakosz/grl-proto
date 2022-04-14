@@ -47,7 +47,7 @@ def sampler(f_positives, f_negatives):
     return wrap
 
 
-@numba.njit(gt.edge(gt.graph, nt.int64), cache=True)
+@numba.njit(cache=True)
 def get_random_anti_edge(graph, vcount2=0):
     """ Sample a random nonexistent edge. """
     vs = np.random.choice(core.vcount(graph), 16) + 1  # @indexing
@@ -59,7 +59,7 @@ def get_random_anti_edge(graph, vcount2=0):
     return get_random_anti_edge(graph)
 
 
-@numba.njit(gt.edge(gt.graph), cache=True)
+@numba.njit(cache=True)
 def get_random_edge(graph):
     """ Sample a random existing edge. """
     src = np.random.choice(core.vcount(graph)) + 1  # @indexing
@@ -69,7 +69,7 @@ def get_random_edge(graph):
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
-@numba.njit(gt.edge(gt.graph, nt.int64), cache=True)
+@numba.njit(cache=True)
 def get_random_pair(graph, vcount2=0):
     """ Sample a random pair of nodes. 
         
