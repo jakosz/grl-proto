@@ -22,7 +22,7 @@ copyright = '2022, Jacek Szejda'
 author = 'Jacek Szejda'
 
 # The full version, including alpha/beta/rc tags
-release = '0.8.5'
+release = '0.8.6'
 
 
 # -- General configuration ---------------------------------------------------
