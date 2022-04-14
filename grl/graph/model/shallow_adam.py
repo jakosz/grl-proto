@@ -60,7 +60,7 @@ class ModelAdam:
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph_or_ref, steps, lr=1e-4, b1=.9, b2=.999:
+    def fit(self, graph_or_ref, steps, lr=1e-4, b1=.9, b2=.999):
         """ Perform `steps` parameter updates.
 
             Parameters
