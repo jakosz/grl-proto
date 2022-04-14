@@ -1,8 +1,5 @@
 import numba
-import numba.types as nt
 import numpy as np
-
-import grl.types as gt
 
 from . import core
 from . import utils
