@@ -60,7 +60,7 @@ class Model:
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph_or_ref, steps, lr=.25, cos_decay=False):
+    def fit(self, graph_or_ref, steps, lr=.01, dropout=.0, cos_decay=False):
         """ Perform `steps` parameter updates.
 
             Parameters
@@ -70,7 +70,9 @@ class Model:
             steps : int
                 Number of updates to perform.
             lr : float, optional
-                Learning rate. Defaults to 0.25.
+                Learning rate. Defaults to 0.01.
+            dropout : float, optional
+                Dropout rate. Defaults to 0.0.
             cos_decay : bool, optional
                 If set, cosine decay schedule will be applied to learning rate.
                 Defaults to False.
@@ -85,7 +87,7 @@ class Model:
         else:
             ref = graph_or_ref
         checks(self, shmem.get(ref))
-        return encode(self, ref, steps, lr, cos_decay)
+        return encode(self, ref, steps, lr, cos_decay, dropout)
 
     def initialize(self):
         # init params
@@ -113,7 +115,8 @@ def encode(model,
            ref, 
            steps, 
            lr, 
-           cos_decay): 
+           cos_decay, 
+           dropout): 
     with ProcessPoolExecutor(config.CORES) as p:
         for core in range(config.CORES):
             model._futures.append(
@@ -126,7 +129,8 @@ def encode(model,
                          vcount2=model.vcount2,
                          steps=utils.split_steps(steps, config.CORES), 
                          lr=lr, 
-                         cos_decay=cos_decay)) 
+                         cos_decay=cos_decay, 
+                         dropout=dropout)) 
 
 
 def worker_mp_wrapper(worker,
@@ -137,10 +141,11 @@ def worker_mp_wrapper(worker,
                       vcount2,
                       steps,
                       lr, 
-                      cos_decay): 
+                      cos_decay, 
+                      dropout): 
     parts = steps//config.PART_SIZE
     for i in range(parts):
         x, y = sampler(shmem.get(ref), config.PART_SIZE, vcount2)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
-        worker(x, y, *(shmem.get(e) for e in refs), clr, activation)
+        worker(x, y, *(shmem.get(e) for e in refs), clr, activation, dropout)
 

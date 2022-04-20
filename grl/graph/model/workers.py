@@ -6,18 +6,19 @@ from grl import numby
 
 
 @numba.njit(cache=True)
-def asymmetric(x, y, L, R, lr, activation):
+def asymmetric(x, y, L, R, lr, activation, dropout):
     n = x.shape[0]
-    for j in range(n):
-        xL = L[x[j, 0]]
-        xR = R[x[j, 1]]
+    j = np.random.choice(L.shape[1], int(L.shape[1]*(1-dropout)))
+    for i in range(n):
+        xL = L[x[i, 0], j]
+        xR = R[x[i, 1], j]
         # compute gradients
-        dy = activation(np.sum(xL*xR)) - y[j]
+        dy = activation(np.sum(xL*xR)) - y[i]
         dxL = clip(xR*dy)
         dxR = clip(xL*dy)
         # update parameters
-        L[x[j, 0]] -= dxL*lr
-        R[x[j, 1]] -= dxR*lr
+        L[x[i, 0], j] -= dxL*lr
+        R[x[i, 1], j] -= dxR*lr
 
 
 @numba.njit(cache=True)
