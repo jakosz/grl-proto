@@ -1,6 +1,6 @@
 from setuptools import setup
 
 setup(name='grl',
-      version='0.8.11',
+      version='0.8.12',
       description='Graph Representation Learning',
       author='Jacek Szejda')
