@@ -20,7 +20,6 @@ class Mixer(Layer):
         super(Mixer, self).__init__()
         self.h0 = Gelu(dim, drop)
         self.h1 = Gelu(dim, drop)
-        self.h2 = Gelu(dim, drop)
         
     def call(self, x):
         h0 = self.h0(x)
@@ -28,5 +27,4 @@ class Mixer(Layer):
         t0 = tf.transpose(h0, [*range(dims-2), dims-1, dims-2])
         h1 = self.h1(t0)
         dims = len(h1.shape.dims)
-        t1 = tf.transpose(h1, [*range(dims-2), dims-1, dims-2])
-        return self.h2(tf.reduce_mean(t1, axis=-2))
+        return tf.transpose(h1, [*range(dims-2), dims-1, dims-2])
