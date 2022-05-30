@@ -44,3 +44,6 @@ def background(f):
 
 if globals().get('get_ipython'):
     get_ipython().run_line_magic('autosave', '5')
+    print('autosave 5')
+
+print(f"grl version: {grl.__version__}")
