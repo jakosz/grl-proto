@@ -24,6 +24,9 @@ class DataGen:
     def __exit__(self, *args, **kwargs):
         self.stop()
     
+    def __iter__(self):
+        return self.queue.get()
+
     def __next__(self):
         return self.queue.get()
     
