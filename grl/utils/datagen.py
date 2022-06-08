@@ -25,7 +25,7 @@ class DataGen:
         self.stop()
     
     def __iter__(self):
-        return self.queue.get()
+        return self
 
     def __next__(self):
         return self.queue.get()
