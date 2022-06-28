@@ -58,9 +58,9 @@ def test_neighbors(graphs):
             assert np.all(grl.neighbors(node, g) == np.array(G.neighbors(node-1)) + 1)  # @indexing
 
 
-def test_neighbors_out_of_index_error(graphs):
+def test_neighbors_raises_index_error(graphs):
     for g in graphs():
-        with pytest.raises(IndexError):
+        with common.pytest.raises(IndexError):
             grl.neighbors(grl.vcount(g)+1, g)
 
 
