@@ -44,11 +44,11 @@ def test_induced_subgraph(graphs):
         # for a sequence of nodes offset by a constant, and then comparing the 
         # intersection of neighbours in the input graph and induced subgraph 
         vs = np.arange(1, offset) + offset 
-	sg = grl.subgraph(vs, g)
-	for v in vs:
-	    nb_g = grl.neighbors(v, g)
-	    nb_sg = grl.neighbors(v - offset, sg)
-	    assert np.all(nb_sg == np.intersect1d(nb_g - offset, nb_sg))
+        sg = grl.subgraph(vs, g)
+        for v in vs:
+            nb_g = grl.neighbors(v, g)
+            nb_sg = grl.neighbors(v - offset, sg)
+            assert np.all(nb_sg == np.intersect1d(nb_g - offset, nb_sg))
 
 
 def test_neighbors(graphs):
