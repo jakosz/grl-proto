@@ -79,7 +79,7 @@ def ecount(graph):
 @numba.njit(cache=True)
 def is_neighbor(vi, vj, graph):
     """ Tell if the nodes vi and vj are neighbors. """
-    return numby.isin_1d(vi, grl.neighbors(vj, graph))
+    return numby.isin_1d(vi, neighbors(vj, graph))
 
 
 @numba.njit()
@@ -103,11 +103,11 @@ def subgraph(vs, graph):
     """
     
     nodes = np.zeros(vs.size+2, dtype=graph[0].dtype.type)
-    edges = np.zeros(grl.degree(graph)[vs-1].sum(), dtype=graph[1].dtype.type)
+    edges = np.zeros(degree(graph)[vs-1].sum(), dtype=graph[1].dtype.type)
     
     # filter edges
     for i, v in enumerate(vs):
-        nb = grl.neighbors(v, graph)
+        nb = neighbors(v, graph)
         inb = np.intersect1d(nb, vs)
         edges[(nodes[i+1]):int(nodes[i+1]+inb.size)] = inb
         nodes[i+2] = nodes[i+1] + inb.size
