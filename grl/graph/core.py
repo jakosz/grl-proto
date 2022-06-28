@@ -30,6 +30,8 @@ so that higher-level functions also compile this way.
 import numba
 import numpy as np
 
+from .. import numby
+
 
 @numba.njit(cache=True)
 def degree(graph):
@@ -75,10 +77,20 @@ def ecount(graph):
 
 
 @numba.njit(cache=True)
+def is_neighbor(vi, vj, graph):
+    """ Tell if the nodes vi and vj are neighbors. """
+    return numby.isin_1d(vi, grl.neighbors(vj, graph))
+
+
+@numba.njit()
 def neighbors(i, graph):
     """ Get neighbors of i-th node. 
     """
     v, e = graph
+    if i > v.size - 2:
+        # note: numba (0.55.1) will raise ConstantInferenceError
+        # if we try to surface node index in the message
+        raise IndexError("node not in graph")
     if v[i+1] - v[i] > 0:
         return e[v[i]:v[i] + (v[i+1] - v[i])]
     else:
