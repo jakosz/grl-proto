@@ -97,10 +97,31 @@ def neighbors(i, graph):
         return np.array([0], dtype=e.dtype)
 
 
-def subgraph(i, graph):
+@numba.njit(parallel=True)
+def subgraph(vs, graph):
     """ Filter to a subgraph spanned by the given nodes.
     """
-    pass
+    
+    nodes = np.zeros(vs.size+2, dtype=graph[0].dtype.type)
+    edges = np.zeros(grl.degree(graph)[vs-1].sum(), dtype=graph[1].dtype.type)
+    
+    # filter edges
+    for i, v in enumerate(vs):
+        nb = grl.neighbors(v, graph)
+        inb = np.intersect1d(nb, vs)
+        edges[(nodes[i+1]):int(nodes[i+1]+inb.size)] = inb
+        nodes[i+2] = nodes[i+1] + inb.size
+    edges = edges[:nodes[-1]]
+    
+    # reindex nodes
+    # TODO: hashmap
+    for i in range(vs.size):
+        for j in numba.prange(edges.size):
+            v = vs[i]
+            if edges[j] == v:
+                edges[j] = i + 1
+    
+    return nodes, edges
 
 
 @numba.njit(cache=True)
