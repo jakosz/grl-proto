@@ -1,8 +1,67 @@
 import json
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
+from queue import Queue
 
 import numpy as np
+
+
+class DataGen:
+    def __init__(self, qsize, f, *args, **kwargs):
+        """ Wrap a function in a queue-populating loop
+            and expose the queue as a generator.
+        """
+        self._step = 0
+        self._stop = True
+        self.args = args
+        self.f = f
+        self.futures = []
+        self.kwargs = kwargs
+        self.pool = ThreadPoolExecutor(qsize)
+        self.qsize = qsize
+        self.queue = Queue(qsize)
+        
+        self.start()
+        
+    def __call__(self):
+        return self
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, *args, **kwargs):
+        self.stop()
+        
+    def __iter__(self):
+        return self.__next__()
+            
+    def __next__(self):
+        if not self._stop:
+            return self.queue.get()
+        else:
+            raise StopIteration
+            
+    def __repr__(self):
+        res = f"{'stopped' if self._stop else 'running'} datagen[{self.qsize}]\n"
+        res += f"  args: {self.args}\n"
+        res += f"kwargs: {self.kwargs}\n"
+        return res
+        
+    def loop(self):
+        while not self._stop:
+            self.queue.put(self.f(*self.args, **self.kwargs))
+            self._step += 1
+            
+    def start(self):
+        self._stop = False
+        for i in range(self.qsize):
+            self.futures.append(self.pool.submit(self.loop))
+            
+    def stop(self):
+        self._stop = True
+        [self.queue.get() for i in range(self.qsize)]
+        self.pool.shutdown(wait=False)
 
 
 class JsonNumpy(json.JSONEncoder):
@@ -47,6 +106,14 @@ def background(n=1, tick=1, store_results=True):
                     self._stop = True
                     self.pool.shutdown(wait=False)
             return ThreadsAndLoops()
+        return wrap
+    return wrap
+
+
+def datagen(qsize=os.cpu_count()):
+    def wrap(f):
+        def wrap(*args, **kwargs):
+            return DataGen(qsize, f, *args, **kwargs)
         return wrap
     return wrap
 
