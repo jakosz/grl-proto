@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import grl
 
@@ -60,7 +61,7 @@ def test_neighbors(graphs):
 
 def test_neighbors_raises_index_error(graphs):
     for g in graphs():
-        with common.pytest.raises(IndexError):
+        with pytest.raises(IndexError):
             grl.neighbors(grl.vcount(g)+1, g)
 
 
