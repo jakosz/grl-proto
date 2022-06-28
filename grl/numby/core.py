@@ -177,6 +177,22 @@ def round(x):
 
 
 @numba.njit(cache=True)
+def shuffle0(x):
+    x = x.copy()
+    for i in range(x.shape[1]):
+        np.random.shuffle(x[:, i])
+    return x
+
+
+@numba.njit(cache=True)
+def shuffle1(x):
+    x = x.copy()
+    for i in range(x.shape[0]):
+        np.random.shuffle(x[i])
+    return x
+
+
+@numba.njit(cache=True)
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
