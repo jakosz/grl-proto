@@ -7,6 +7,7 @@ Some general notes:
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+from . import datasets
 from . import graph
 from . import metrics
 from . import utils
