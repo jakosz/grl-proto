@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+
 from ..graph import utils
 
 HERE = os.path.dirname(__file__)
