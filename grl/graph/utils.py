@@ -144,6 +144,11 @@ def to_adjacency(graph):
     return A
 
 
+@numba.njit(cache=True)
+def to_edgelist(graph):
+    return enumerate_edges(graph)
+
+
 def to_igraph(g):
     """ Convert grl graph to igraph.Graph
     """
