@@ -31,7 +31,7 @@ def clip(x):
 
 
 @numba.njit(cache=True)
-def diagonal(x, y, L, D, lr, activation):
+def diagonal(x, y, L, D, lr, activation, dropout):
     n = x.shape[0]
     if dropout > 0:
         j = np.random.choice(L.shape[1], int(L.shape[1]*(1-dropout)))
@@ -53,7 +53,7 @@ def diagonal(x, y, L, D, lr, activation):
 
 
 @numba.njit(cache=True)
-def symmetric(x, y, L, lr, activation):
+def symmetric(x, y, L, lr, activation, dropout):
     n = x.shape[0]    
     if dropout > 0:
         j = np.random.choice(L.shape[1], int(L.shape[1]*(1-dropout)))
