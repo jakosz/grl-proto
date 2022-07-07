@@ -8,6 +8,7 @@
 # (Debian GNU/Linux 11 (bullseye), Python 3.9.2, llvmlite==0.38.1, numba==0.55.1).
 # I don't have time to investigate this atm, so leaving a note here:
 # the code will work upon fresh install, but after the functions are cached, 
+# importing it in a different process will often (but not always) cause a crash.
 # 
 # As of 0.8.37+ I have a lot of doubts whether decorators make the 
 # whole shabang easier (given the kwargs limitation of numba jit compiler);
