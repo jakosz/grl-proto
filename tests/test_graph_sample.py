@@ -28,7 +28,7 @@ def test_get_neg_sample(graphs):
 
 
 def test_get_random_edge_with_mask(graphs):
-    for graph in graphs:
+    for graph in graphs():
         mask = grl.graph.utils.get_edge_mask(.2, graph)
         
         samples = []
