@@ -139,7 +139,7 @@ def from_ogb(dataset):
     return nodes, edges 
 
 
-@numba.njit()
+@numba.njit(cache=True)
 def get_edge_mask(p, graph):
     """ Generate an array of binary edge attributes, 
         making sure that graph symmetry is respected.
@@ -157,6 +157,20 @@ def get_edge_mask(p, graph):
 
 def hexdigest(graph):
     return digest(graph).hex()
+
+
+@numba.njit(cache=True)
+def is_edge_masked(edge, graph, mask):
+    """ Given a graph and a mask, decide if the given edge is masked
+        (i.e. has its corresponding value set to 0). 
+    """
+    src, dst = edge
+    nb = core.neighbors(src, graph)
+    nb_mask = mask[utils.addr_neighbors(src, graph)]
+    for i in range(nb.size):
+        if nb[i] == dst and nb_mask[i] == 0:
+            return True
+    return False
 
 
 @numba.njit(cache=True, parallel=True)
