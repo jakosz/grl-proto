@@ -143,12 +143,11 @@ def get_edge_mask(p, graph):
     """ Generate an array of binary edge attributes, 
         making sure that graph symmetry is respected.
     """
-    v, e = graph
-    mask = np.random.binomial(1, p, e.size)
-    el = to_edgelist(g)
+    mask = np.random.binomial(1, p, graph[1].size)
+    el = to_edgelist(graph)
     for i in range(mask.size):
         src, dst = el[i]
-        addr = addr_neighbors(dst, g)
+        addr = addr_neighbors(dst, graph)
         for j in addr:
             if j > i and el[j, 1] == src:
                 mask[j] = mask[i]
