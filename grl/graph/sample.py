@@ -1,8 +1,17 @@
 # Notes
 # -----
 #
-# As of 0.8.37 I have a lot of doubts whether decorators make the 
-# whole shabang easier (given the kwargs limitation of numba jit compiler).  
+# 2022-07-07
+#
+# Caching is disabled on purpose: there's a weird behaviour somewhere in numba/llvm
+# that causes PYTHON TO CRASH when caching in this module is enabled.
+# (Debian GNU/Linux 11 (bullseye), Python 3.9.2, llvmlite==0.38.1, numba==0.55.1).
+# I don't have time to investigate this atm, so leaving a note here:
+# the code will work upon fresh install, but after the functions are cached, 
+# 
+# As of 0.8.37+ I have a lot of doubts whether decorators make the 
+# whole shabang easier (given the kwargs limitation of numba jit compiler);
+# more notes on the API design and the "big rewrite" in: notebooks/grl-proto
 #
 import numba
 import numpy as np
@@ -74,8 +83,6 @@ def with_mask(edge_sampler):
     return wrap
 
 
-# caching is disabled on purpose; there's a weird bug somewhere - enabling caching 
-# IN THIS SPECIFIC FUNCTION will sometimes make Python crash
 @numba.njit()  
 def get_random_anti_edge(graph, vcount2=0):
     """ Sample a random nonexistent edge. """
@@ -96,7 +103,7 @@ def get_random_anti_edge(graph, vcount2=0):
     return get_random_anti_edge(graph, vcount2)
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def get_random_edge(graph):
     """ Sample a random existing edge. """
     src = np.random.choice(core.vcount(graph)) + 1  # @indexing
@@ -111,7 +118,7 @@ def get_random_edge_with_mask():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def _alt_get_random_edge_with_mask(graph, mask):
     """ Sample a random existing edge allowed by mask
         (i.e. if its corresponding mask value is 1).
@@ -127,7 +134,7 @@ def _alt_get_random_edge_with_mask(graph, mask):
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def get_random_pair(graph, vcount2=0):
     """ Sample a random pair of nodes. 
         
@@ -152,7 +159,7 @@ def get_random_pair(graph, vcount2=0):
         return np.array([src, dst], dtype=graph[1].dtype)
     
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def get_random_walk_pair(graph, walk_length):
     v = np.random.choice(core.vcount(graph)) + 1  # @indexing
     w = random_walk(v, graph, walk_length).copy()
@@ -165,7 +172,7 @@ def get_random_walk_pair_with_mask():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 @sampler(get_random_edge, get_random_pair)
 def get_nce_sample():
     """ Sample edges with balanced noise contrast.
@@ -194,7 +201,7 @@ def get_nce_sample():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 @sampler(get_random_edge_with_mask, get_random_pair)
 def get_nce_sample_with_mask():
     """ Draw a graph sample where positive node pairs are 
@@ -232,7 +239,7 @@ def get_nce_sample_with_mask():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 @sampler(get_random_edge, get_random_anti_edge)
 def get_neg_sample():
     """ Sample edges with balanced negative contrast.
@@ -261,7 +268,7 @@ def get_neg_sample():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 @sampler(get_random_walk_pair, get_random_pair)
 def get_random_walk_sample():
     """ Draw a graph sample where positive node pairs are taken
@@ -295,7 +302,7 @@ def get_random_walk_sample():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 @sampler(get_random_walk_pair_with_mask, get_random_pair)
 def get_random_walk_sample_with_mask():
     """ Draw a graph sample where positive node pairs are taken
@@ -329,7 +336,7 @@ def get_random_walk_sample_with_mask():
     pass
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def _random_uniform_walk(vi, graph, length, data=None, step=0):
     if data is None:
         data = np.zeros(length, dtype=graph[1].dtype.type)
@@ -339,7 +346,7 @@ def _random_uniform_walk(vi, graph, length, data=None, step=0):
     return _random_uniform_walk(data[step], graph, length-1, data, step+1)
 
 
-@numba.njit(cache=True)
+@numba.njit(cache=False)
 def random_walk(vi, graph, length):
     return _random_uniform_walk(vi, graph, length)
 
