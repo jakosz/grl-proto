@@ -48,19 +48,19 @@ class Model:
         self.obs = obs
         self.sampler = getattr(sample, sampler)
         self.emb_type = emb_type
-        self.vcount2 = obs[1] if self.bimodal else 0 
+        self.nargs = (obs[1] if self.bimodal else 0,)  # :| 
         self.initialize()
 
-    def evaluate(self, graph_or_ref, sample_size=8192):
+    def evaluate(self, graph_or_ref, pargs=(), sample_size=8192):
         if type(graph_or_ref) is not str:
             graph = graph_or_ref
         else:
             graph = shmem.get(graph_or_ref)
-        x, y = self.sampler(graph, sample_size, self.vcount2)
+        x, y = self.sampler(graph, sample_size, pargs=pargs, nargs=self.nargs)
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph_or_ref, steps, lr=.01, dropout=.0, cos_decay=False):
+    def fit(self, graph_or_ref, pargs=(), steps, lr=.01, dropout=.0, cos_decay=False):
         """ Perform `steps` parameter updates.
 
             Parameters
@@ -87,7 +87,7 @@ class Model:
         else:
             ref = graph_or_ref
         checks(self, shmem.get(ref))
-        return encode(self, ref, steps, lr, cos_decay, dropout)
+        return encode(self, ref, pargs, steps, lr, cos_decay, dropout)
 
     def initialize(self):
         # init params
@@ -112,7 +112,8 @@ def checks(model, graph):
 
 
 def encode(model,
-           ref, 
+           ref,
+           pargs,
            steps, 
            lr, 
            cos_decay, 
@@ -126,7 +127,8 @@ def encode(model,
                          activation=model.activation,
                          ref=ref,
                          refs=model.refs,
-                         vcount2=model.vcount2,
+                         pargs=pargs,
+                         nargs=model.nargs,
                          steps=utils.split_steps(steps, config.CORES), 
                          lr=lr, 
                          cos_decay=cos_decay, 
@@ -138,14 +140,15 @@ def worker_mp_wrapper(worker,
                       activation,
                       ref,   # data ref  
                       refs,  # param refs
-                      vcount2,
+                      pargs,
+                      nargs,
                       steps,
                       lr, 
                       cos_decay, 
                       dropout): 
     parts = steps//config.PART_SIZE
     for i in range(parts):
-        x, y = sampler(shmem.get(ref), config.PART_SIZE, vcount2)
+        x, y = sampler(shmem.get(ref), config.PART_SIZE, pargs=pargs, nargs=nargs)
         clr = lr if not cos_decay else numby.cos_decay(i/parts)*lr
         worker(x, y, *(shmem.get(e) for e in refs), clr, activation, dropout)
 
