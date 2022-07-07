@@ -48,8 +48,9 @@ def sampler(f_positives, f_negatives):
     return wrap
 
 
-
-@numba.njit()
+# caching is disabled on purpose; there's a weird bug somewhere - enabling caching 
+# IN THIS SPECIFIC FUNCTION will sometimes make Python crash
+@numba.njit()  
 def get_random_anti_edge(graph, vcount2=0):
     """ Sample a random nonexistent edge. """
     if not vcount2:
@@ -120,8 +121,12 @@ def get_random_pair(graph, vcount2=0):
         return np.array([src, dst], dtype=graph[1].dtype)
     
 
+@numba.njit(cache=True)
 def get_random_walk_pair(graph, walk_length):
-    raise NotImplementedError
+    v = np.random.choice(grl.vcount(graph)) + 1  # @indexing
+    w = grl.graph.sample.random_walk(v, graph, walk_length).copy()
+    np.random.shuffle(w)
+    return w[:2]
 
 
 @numba.njit(cache=True)
@@ -216,6 +221,40 @@ def get_neg_sample():
         -------
         2darray, 1darray
             Edgelist and targets. 
+    """
+    pass
+
+
+@numba.njit(cache=True)
+@sampler(get_random_walk_pair, get_random_pair)
+def get_random_walk_sample():
+    """ Draw a graph sample where positive node pairs are taken
+        from random walks of given length, and negative pairs are 
+        drawn at random (i.e. this sampler uses a uniform noise 
+        contrast).
+        
+        Parameters
+        ----------
+        graph : tuple
+            A grl graph.
+        n : int
+            Sample size.
+        pargs : tuple
+            Positional arguments to the random walk sampler:
+                (walk_length,)
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+                
+        Returns
+        -------
+        result : (2darray, 1darray)
+        
+        Notes
+        -----
+        
     """
     pass
 
