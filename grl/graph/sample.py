@@ -8,31 +8,32 @@ from .. import numby
 
 def sampler(f_positives, f_negatives):
     """ Define graph sampler. 
-
+        
         Parameters
         ----------
-        f_positives : function(graph)
-            A function taking graph and returning 1darray with a random example
-            of an edge.  
-        f_negatives : function(graph, vcount2)
-            A function taking graph and number of nodes in secondary (non-indexed) 
-            modality and returning 1darray with a random example of a missing edge. 
-
+        f_positives : function(graph, *pargs)
+            A function taking graph and optional arguments and returning 1darray 
+            with a random example of an edge.  
+        f_negatives : function(graph, *nargs)
+            A function taking graph and optional arguments and returning 1darray 
+            with a random example of a non-edge. 
+        
         Returns
         -------
         function
     """
     def wrap(f):
-        def get_sample(graph, n, vcount2=0):
-            n = n//2
-            X = np.empty((n*2, 2), dtype=graph[1].dtype)
+        def get_sample(graph, n, pargs=(), nargs=()):
+            
+            X = np.empty((n, 2), dtype=graph[1].dtype)
+            n //= 2
             Y = np.hstack((np.ones(n), np.zeros(n)))
 
             for i in range(n):
-                X[i] = f_positives(graph)
+                X[i] = f_positives(graph, *pargs)
 
             for i in range(n):
-                X[n+i] = f_negatives(graph, vcount2)
+                X[n+i] = f_negatives(graph, *nargs)
 
             # shuffle
             srt = np.arange(n*2)
@@ -40,8 +41,12 @@ def sampler(f_positives, f_negatives):
             X, Y = X[srt], Y[srt]
 
             return X, Y
+        # propagate name & docstring of the wrapped function
+        get_sample.__name__ = f.__name__
+        get_sample.__doc__ = f.__doc__
         return get_sample
     return wrap
+
 
 
 @numba.njit(cache=True)
@@ -75,6 +80,22 @@ def get_random_edge(graph):
 
 
 @numba.njit(cache=True)
+def get_random_edge_with_mask(graph, mask):
+    """ Sample a random existing edge allowed by mask
+        (i.e. if its corresponding mask value is 1).
+    """
+    v, e = graph
+    #v = v.astype(np.int64)  # @indexing
+    src = np.random.choice(core.vcount(graph)) + 1  # @indexing
+    nb_addr = utils.addr_neighbors(src, graph)
+    nb_addr = nb_addr[mask[nb_addr] == 1]
+    if nb_addr.size == 0:
+        return get_random_edge_with_mask(graph, mask)
+    dst = np.random.choice(e[nb_addr])
+    return np.array([src, dst], dtype=graph[1].dtype)
+
+
+@numba.njit(cache=True)
 def get_random_pair(graph, vcount2=0):
     """ Sample a random pair of nodes. 
         
@@ -99,13 +120,13 @@ def get_random_pair(graph, vcount2=0):
         return np.array([src, dst], dtype=graph[1].dtype)
     
 
-def get_random_walk_pair(graph):
+def get_random_walk_pair(graph, walk_length):
     raise NotImplementedError
 
 
 @numba.njit(cache=True)
 @sampler(get_random_edge, get_random_pair)
-def get_nce_sample(graph, n, vcount2=0):
+def get_nce_sample():
     """ Sample edges with balanced noise contrast.
         
         Parameters
@@ -114,9 +135,15 @@ def get_nce_sample(graph, n, vcount2=0):
             grl.graph
         n : int
             Sample size. 
-        vcount2 : int, optional
-            Number of nodes in the second (non-indexed) modality in the graph. 
-            For unimodal graphs this value should be 0 (default).
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+            Details:
+                vcount2 : int
+                    Number of nodes in the second (non-indexed) modality in the graph. 
+                    For unimodal graphs this value should be 0 (default).
 
         Returns
         -------
@@ -127,8 +154,46 @@ def get_nce_sample(graph, n, vcount2=0):
 
 
 @numba.njit(cache=True)
+@sampler(get_random_edge_with_mask, get_random_pair)
+def get_nce_sample_with_mask():
+    """ Draw a graph sample where positive node pairs are 
+        neighbors (k=1) allowed by the given mask, and negative pairs 
+        are drawn at random (i.e. this sampler uses a uniform noise 
+        contrast).
+        
+        Parameters
+        ----------
+        graph : tuple
+            A grl graph.
+        n : int
+            Sample size.
+        pargs : tuple
+            Positional arguments to the random edge sampler:
+                (mask,)
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+            Details:
+                vcount2 : int
+                    Number of nodes in the second (non-indexed) modality in the graph. 
+                    For unimodal graphs this value should be 0 (default).
+                
+        Returns
+        -------
+        result : (2darray, 1darray)
+        
+        Notes
+        -----
+        
+    """    
+    pass
+
+
+@numba.njit(cache=True)
 @sampler(get_random_edge, get_random_anti_edge)
-def get_neg_sample(graph, n, vcount2=0):
+def get_neg_sample():
     """ Sample edges with balanced negative contrast.
         
         Parameters
@@ -137,9 +202,15 @@ def get_neg_sample(graph, n, vcount2=0):
             grl.graph
         n : int
             Sample size. 
-        vcount2 : int, optional
-            Number of nodes in the second (non-indexed) modality in the graph. 
-            For unimodal graphs this value should be 0 (default).
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+            Details:
+                vcount2 : int
+                    Number of nodes in the second (non-indexed) modality in the graph. 
+                    For unimodal graphs this value should be 0 (default).
 
         Returns
         -------
