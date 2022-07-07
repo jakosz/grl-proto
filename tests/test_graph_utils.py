@@ -90,7 +90,7 @@ def test_from_ogb_vcount(ogb_dataset):
 
 def test_get_edge_mask(graphs):
     for graph in graphs():
-        mask = get_edge_mask(.2, graph)
+        mask = grl.graph.utils.get_edge_mask(.2, graph)
         for vi in grl.graph.utils.enumerate_nodes(graph):
             nbs = grl.neighbors(vi, graph)
             adr = grl.graph.utils.addr_neighbors(vi, graph)

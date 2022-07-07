@@ -36,5 +36,5 @@ def test_get_random_edge_with_mask(graphs):
             samples.append(grl.graph.sample.get_random_edge_with_mask(graph, mask))
         
         samples = np.unique(np.vstack(samples), axis=0)
-        truth = grl.graph.utils.to_edgelist(g)[mask.astype(bool)]
+        truth = grl.graph.utils.to_edgelist(graph)[mask.astype(bool)]
         assert np.all(samples == truth)
