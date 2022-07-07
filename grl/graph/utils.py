@@ -166,7 +166,7 @@ def is_edge_masked(edge, graph, mask):
     """
     src, dst = edge
     nb = core.neighbors(src, graph)
-    nb_mask = mask[utils.addr_neighbors(src, graph)]
+    nb_mask = mask[addr_neighbors(src, graph)]
     for i in range(nb.size):
         if nb[i] == dst and nb_mask[i] == 0:
             return True
