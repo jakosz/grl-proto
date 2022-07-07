@@ -60,7 +60,7 @@ class Model:
         yhat = self.predict(x) 
         return metrics.accuracy(y, yhat)
 
-    def fit(self, graph_or_ref, pargs=(), steps, lr=.01, dropout=.0, cos_decay=False):
+    def fit(self, graph_or_ref, steps, pargs=(), lr=.01, dropout=.0, cos_decay=False):
         """ Perform `steps` parameter updates.
 
             Parameters
