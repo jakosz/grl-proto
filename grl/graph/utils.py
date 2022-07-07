@@ -14,6 +14,7 @@ def addr_neighbors(vi, graph):
         are stored. 
     """
     v, e = graph
+    v = v.astype(np.int64)
     return np.arange(v[vi], v[vi+1])
 
 
