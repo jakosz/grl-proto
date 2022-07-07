@@ -86,3 +86,16 @@ def test_from_ogb_vcount(ogb_dataset):
     ogb_edges = dataset.graph['edge_index'].T
     
     assert grl.vcount(graph) == dataset.graph['num_nodes'], "node counts do not match"
+
+
+def test_get_edge_mask(graphs):
+    for graph in graphs:
+        mask = get_edge_mask(.2, graph)
+        for vi in grl.graph.utils.enumerate_nodes(graph):
+            nbs = grl.neighbors(vi, graph)
+            adr = grl.graph.utils.addr_neighbors(vi, graph)
+            for i, nb in enumerate(nbs):
+                for j, cnb in enumerate(grl.neighbors(nb, graph)):
+                    if cnb == vi:
+                        cadr = grl.graph.utils.addr_neighbors(nb, graph)
+                        assert mask[adr[i]] == mask[cadr[j]]

@@ -25,3 +25,16 @@ def test_get_neg_sample(graphs):
             assert positive[i, 0] in grl.neighbors(positive[i, 1], G)    
             assert not negative[i, 1] in grl.neighbors(negative[i, 0], G)
             assert not negative[i, 0] in grl.neighbors(negative[i, 1], G)
+
+
+def test_get_random_edge_with_mask(graphs):
+    for graph in graphs:
+        mask = grl.graph.utils.get_edge_mask(.2, graph)
+        
+        samples = []
+        for _ in range(grl.ecount(graph)*10):
+            samples.append(grl.graph.sample.get_random_edge_with_mask(graph, mask))
+        
+        samples = np.unique(np.vstack(samples), axis=0)
+        truth = grl.graph.utils.to_edgelist(g)[mask.astype(bool)]
+        assert np.all(samples == truth)
