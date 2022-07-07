@@ -49,7 +49,7 @@ def sampler(f_positives, f_negatives):
 
 
 
-@numba.njit(cache=True)
+@numba.njit()
 def get_random_anti_edge(graph, vcount2=0):
     """ Sample a random nonexistent edge. """
     if not vcount2:
