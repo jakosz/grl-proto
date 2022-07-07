@@ -8,6 +8,15 @@ import numpy as np
 from . import core
 
 
+@numba.njit(cache=True)
+def addr_neighbors(vi, graph):
+    """ Get indices of the the edge array where the given node's neighbours 
+        are stored. 
+    """
+    v, e = graph
+    return np.arange(v[vi], v[vi+1])
+
+
 def digest(graph):
     """ Get SHA256 digest of a deterministic graph sample.
 
@@ -127,6 +136,23 @@ def from_ogb(dataset):
     nodes[-1] = offset
     
     return nodes, edges 
+
+
+@numba.njit()
+def get_edge_mask(p, graph):
+    """ Generate an array of binary edge attributes, 
+        making sure that graph symmetry is respected.
+    """
+    v, e = graph
+    mask = np.random.binomial(1, p, e.size)
+    el = to_edgelist(g)
+    for i in range(mask.size):
+        src, dst = el[i]
+        addr = addr_neighbors(dst, g)
+        for j in addr:
+            if j > i and el[j, 1] == src:
+                mask[j] = mask[i]
+    return mask
 
 
 def hexdigest(graph):
