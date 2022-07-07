@@ -378,10 +378,11 @@ def get_random_walk_sample_with_mask():
 @numba.njit(cache=False)
 def _random_uniform_walk(vi, graph, length, data=None, step=0):
     if data is None:
-        data = np.zeros(length, dtype=graph[1].dtype.type)
+        data = np.zeros(length+1, dtype=graph[1].dtype.type)  # +1 for the first node
+        data[0] = vi
     if length == 0:
         return data
-    data[step] = np.random.choice(core.neighbors(vi, graph))
+    data[step+1] = np.random.choice(core.neighbors(vi, graph))
     return _random_uniform_walk(data[step], graph, length-1, data, step+1)
 
 
