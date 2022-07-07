@@ -154,8 +154,8 @@ def get_random_pair(graph, vcount2=0):
 
 @numba.njit(cache=True)
 def get_random_walk_pair(graph, walk_length):
-    v = np.random.choice(grl.vcount(graph)) + 1  # @indexing
-    w = grl.graph.sample.random_walk(v, graph, walk_length).copy()
+    v = np.random.choice(core.vcount(graph)) + 1  # @indexing
+    w = random_walk(v, graph, walk_length).copy()
     np.random.shuffle(w)
     return w[:2]
 
