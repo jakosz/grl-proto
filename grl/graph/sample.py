@@ -1,3 +1,9 @@
+# Notes
+# -----
+#
+# As of 0.8.37 I have a lot of doubts whether decorators make the 
+# whole shabang easier (given the kwargs limitation of numba jit compiler).  
+#
 import numba
 import numpy as np
 
@@ -48,6 +54,26 @@ def sampler(f_positives, f_negatives):
     return wrap
 
 
+def with_mask(edge_sampler):
+    """ Modify edge sampler to return unmasked examples.
+        Mask should be the last positional argument to the wrapped function.
+    """
+    def wrap(dummy):
+        @numba.njit()
+        def wrapd(graph, *args):
+            fargs, mask = args[:-1], args[-1]
+            edge = edge_sampler(graph, *fargs)
+            if utils.is_edge_masked(edge, graph, mask):
+                return wrapd(graph, *args)
+            else:
+                return edge
+        # propagate name & docstring of the wrapped function
+        wrapd.__name__ = dummy.__name__
+        wrapd.__doc__ = dummy.__doc__
+        return wrapd
+    return wrap
+
+
 # caching is disabled on purpose; there's a weird bug somewhere - enabling caching 
 # IN THIS SPECIFIC FUNCTION will sometimes make Python crash
 @numba.njit()  
@@ -80,8 +106,13 @@ def get_random_edge(graph):
     return np.array([src, dst], dtype=graph[1].dtype)
 
 
+@with_mask(get_random_edge)
+def get_random_edge_with_mask():
+    pass
+
+
 @numba.njit(cache=True)
-def get_random_edge_with_mask(graph, mask):
+def _alt_get_random_edge_with_mask(graph, mask):
     """ Sample a random existing edge allowed by mask
         (i.e. if its corresponding mask value is 1).
     """
@@ -127,6 +158,11 @@ def get_random_walk_pair(graph, walk_length):
     w = grl.graph.sample.random_walk(v, graph, walk_length).copy()
     np.random.shuffle(w)
     return w[:2]
+
+
+@with_mask(get_random_walk_pair)
+def get_random_walk_pair_with_mask():
+    pass
 
 
 @numba.njit(cache=True)
@@ -260,9 +296,43 @@ def get_random_walk_sample():
 
 
 @numba.njit(cache=True)
+@sampler(get_random_walk_pair_with_mask, get_random_pair)
+def get_random_walk_sample_with_mask():
+    """ Draw a graph sample where positive node pairs are taken
+        from random walks of given length, and negative pairs are 
+        drawn at random (i.e. this sampler uses a uniform noise 
+        contrast).
+        
+        Parameters
+        ----------
+        graph : tuple
+            A grl graph.
+        n : int
+            Sample size.
+        pargs : tuple
+            Positional arguments to the random walk sampler:
+                (walk_length, mask,)
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+                
+        Returns
+        -------
+        result : (2darray, 1darray)
+        
+        Notes
+        -----
+        
+    """
+    pass
+
+
+@numba.njit(cache=True)
 def _random_uniform_walk(vi, graph, length, data=None, step=0):
     if data is None:
-        data = np.zeros(length, dtype=graph[0].dtype.type)
+        data = np.zeros(length, dtype=graph[1].dtype.type)
     if length == 0:
         return data
     data[step] = np.random.choice(core.neighbors(vi, graph))
