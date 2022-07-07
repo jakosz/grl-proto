@@ -270,6 +270,44 @@ def get_neg_sample():
 
 
 @numba.njit(cache=False)
+@sampler(get_random_edge_with_mask, get_random_anti_edge)
+def get_neg_sample_with_mask():
+    """ Draw a graph sample where positive node pairs are 
+        neighbors (k=1) allowed by the given mask, and negative pairs 
+        are drawn from non-existent edges (i.e. this sampler uses a negative  
+        contrast).
+        
+        Parameters
+        ----------
+        graph : tuple
+            A grl graph.
+        n : int
+            Sample size.
+        pargs : tuple
+            Positional arguments to the random edge sampler:
+                (mask,)
+        nargs : tuple, optional
+            Positional arguments to the contrastive sampler:
+                (vcount2,)
+            Defaults to:
+                (0,)
+            Details:
+                vcount2 : int
+                    Number of nodes in the second (non-indexed) modality in the graph. 
+                    For unimodal graphs this value should be 0 (default).
+                
+        Returns
+        -------
+        result : (2darray, 1darray)
+        
+        Notes
+        -----
+        
+    """    
+    pass
+
+
+@numba.njit(cache=False)
 @sampler(get_random_walk_pair, get_random_pair)
 def get_random_walk_sample():
     """ Draw a graph sample where positive node pairs are taken
