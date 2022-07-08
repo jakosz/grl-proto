@@ -34,6 +34,16 @@ from .. import numby
 
 
 @numba.njit(cache=True)
+def addr_neighbors(vi, graph):
+    """ Get node's address in the edge array,
+        i.e. region where the given node's neighbours are stored. 
+    """
+    v, e = graph
+    v = v.astype(np.int64)  # @indexing
+    return np.arange(v[vi], v[vi+1])
+
+
+@numba.njit(cache=True)
 def degree(graph):
     """ Get degrees of nodes in a graph.
         
@@ -102,8 +112,8 @@ def neighbors_with_mask(vi, graph, mask):
     """ Get neighbors of i-th node allowed by the given mask. 
     """
     v, e = graph
-    nb = grl.neighbors(vi, graph)
-    nb_addr = grl.graph.utils.addr_neighbors(vi, graph)
+    nb = neighbors(vi, graph)
+    nb_addr = addr_neighbors(vi, graph)
     res = nb[mask[nb_addr] == 1]
     if res.size:
         return res

@@ -127,7 +127,7 @@ def _alt_get_random_edge_with_mask(graph, mask):
     v, e = graph
     #v = v.astype(np.int64)  # @indexing
     src = np.random.choice(core.vcount(graph)) + 1  # @indexing
-    nb_addr = utils.addr_neighbors(src, graph)
+    nb_addr = core.addr_neighbors(src, graph)
     nb_addr = nb_addr[mask[nb_addr] == 1]
     if nb_addr.size == 0:
         return get_random_edge_with_mask(graph, mask)
@@ -168,9 +168,12 @@ def get_random_walk_pair(graph, walk_length):
     return w[:2]
 
 
-@with_mask(get_random_walk_pair)
-def get_random_walk_pair_with_mask():
-    pass
+@numba.njit(cache=False)
+def get_random_walk_pair_with_mask(graph, walk_length, mask):
+    v = np.random.choice(grl.vcount(graph)) + 1  # @indexing
+    w = random_walk_with_mask(v, graph, walk_length, mask).copy()
+    np.random.shuffle(w)
+    return w[:2]
 
 
 @numba.njit(cache=False)
@@ -389,6 +392,22 @@ def _random_uniform_walk(vi, graph, length, data=None, step=0):
 @numba.njit(cache=False)
 def random_walk(vi, graph, length):
     return _random_uniform_walk(vi, graph, length)
+
+
+@numba.njit(cache=False)
+def _random_uniform_walk_with_mask(vi, graph, length, mask, data=None, step=0):
+    if data is None:
+        data = np.zeros(length+1, dtype=graph[1].dtype.type)  # +1 for the first node
+        data[0] = vi
+    if length == 0:
+        return data
+    data[step+1] = np.random.choice(core.neighbors_with_mask(vi, graph, mask))
+    return _random_uniform_walk_with_mask(data[step], graph, length-1, mask, data, step+1)
+
+
+@numba.njit(cache=False)
+def random_walk_with_mask(vi, graph, length, mask):
+    return _random_uniform_walk_with_mask(vi, graph, length, mask)
 
 
 # Alias

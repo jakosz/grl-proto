@@ -8,16 +8,6 @@ import numpy as np
 from . import core
 
 
-@numba.njit(cache=True)
-def addr_neighbors(vi, graph):
-    """ Get indices of the the edge array where the given node's neighbours 
-        are stored. 
-    """
-    v, e = graph
-    v = v.astype(np.int64)
-    return np.arange(v[vi], v[vi+1])
-
-
 def digest(graph):
     """ Get SHA256 digest of a deterministic graph sample.
 
