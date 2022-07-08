@@ -138,7 +138,7 @@ def get_edge_mask(p, graph):
     el = to_edgelist(graph)
     for i in range(mask.size):
         src, dst = el[i]
-        addr = addr_neighbors(dst, graph)
+        addr = core.addr_neighbors(dst, graph)
         for j in addr:
             if j > i and el[j, 1] == src:
                 mask[j] = mask[i]
@@ -156,7 +156,7 @@ def is_edge_masked(edge, graph, mask):
     """
     src, dst = edge
     nb = core.neighbors(src, graph)
-    nb_mask = mask[addr_neighbors(src, graph)]
+    nb_mask = mask[core.addr_neighbors(src, graph)]
     for i in range(nb.size):
         if nb[i] == dst and nb_mask[i] == 0:
             return True
