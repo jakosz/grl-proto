@@ -97,6 +97,20 @@ def neighbors(i, graph):
         return np.array([0], dtype=e.dtype)
 
 
+@numba.njit()
+def neighbors_with_mask(vi, graph, mask):
+    """ Get neighbors of i-th node allowed by the given mask. 
+    """
+    v, e = graph
+    nb = grl.neighbors(vi, graph)
+    nb_addr = grl.graph.utils.addr_neighbors(vi, graph)
+    res = nb[mask[nb_addr] == 1]
+    if res.size:
+        return res
+    else:
+        return np.zeros(1, dtype=e.dtype.type)  # @indexing
+
+
 @numba.njit(parallel=True)
 def subgraph(vs, graph):
     """ Filter to a subgraph spanned by the given nodes.
