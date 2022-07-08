@@ -170,7 +170,7 @@ def get_random_walk_pair(graph, walk_length):
 
 @numba.njit(cache=False)
 def get_random_walk_pair_with_mask(graph, walk_length, mask):
-    v = np.random.choice(grl.vcount(graph)) + 1  # @indexing
+    v = np.random.choice(core.vcount(graph)) + 1  # @indexing
     w = random_walk_with_mask(v, graph, walk_length, mask).copy()
     np.random.shuffle(w)
     return w[:2]
