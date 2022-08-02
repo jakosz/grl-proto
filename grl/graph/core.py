@@ -144,6 +144,7 @@ def subgraph(vs, graph):
             v = vs[i]
             if edges[j] == v:
                 edges[j] = i + 1
+                break
     
     return nodes, edges
 
