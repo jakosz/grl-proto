@@ -16,4 +16,4 @@ from .nn import *
 from .numby import *
 from .shmem._ops import *
 
-__version__ = "0.8.49"
+__version__ = "0.8.50"
