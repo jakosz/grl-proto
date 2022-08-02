@@ -139,12 +139,11 @@ def subgraph(vs, graph):
     
     # reindex nodes
     # TODO: hashmap
-    for i in range(vs.size):
-        for j in numba.prange(edges.size):
-            v = vs[i]
-            if edges[j] == v:
-                edges[j] = i + 1
-                break
+    for i in range(edges.size):
+	for j in range(vs.size):
+	    if edges[i] == vs[j]:
+		edges[i] = j + 1
+		break    
     
     return nodes, edges
 
