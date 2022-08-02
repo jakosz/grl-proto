@@ -140,10 +140,10 @@ def subgraph(vs, graph):
     # reindex nodes
     # TODO: hashmap
     for i in range(edges.size):
-	for j in range(vs.size):
-	    if edges[i] == vs[j]:
-		edges[i] = j + 1
-		break    
+    for j in range(vs.size):
+        if edges[i] == vs[j]:
+        edges[i] = j + 1
+        break    
     
     return nodes, edges
 
