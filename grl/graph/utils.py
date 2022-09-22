@@ -77,8 +77,24 @@ def from_adjacency(A):
     return nodes, edges
 
 
-def from_edgelist():
-    pass
+def from_edgelist(el):
+    """ Make edgelist symmetric and convert to grl graph representation.
+    """
+    el = np.unique(np.vstack((el, el[:, ::-1])), axis=0)
+
+    # make graph
+
+    edges = np.empty(el.shape[0], dtype=np.uint32)
+    nodes = np.zeros(el.max()+2, dtype=np.uint64)
+
+    cnt = 0
+    for i in range(el.max()):
+        nbs = el[el[:, 0] == i+1, 1]
+        edges[cnt:cnt+nbs.size] = nbs.astype(np.uint32)
+        cnt += nbs.size
+        nodes[i+2] = cnt
+    
+    return (nodes, edges)
 
 
 def from_igraph(g):
